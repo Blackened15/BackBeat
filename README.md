@@ -84,7 +84,7 @@ another_song,https://youtu.be/...,500,98.5,no
 | **Browser cookies** | Lets yt-dlp authenticate using your browser session. Unlocks age-restricted and members-only videos. If you have YouTube Premium, also grants access to higher-bitrate streams. Pick the browser you use for YouTube, or *None* to skip. |
 | **Quality** | Best available / 1080p max / 720p max / 480p max / Smallest file |
 | **Output format** | **MP4** — fast encode, widely compatible. **WEBM** — slower encode, smaller file; required on Linux. |
-| **Scale to 1080p** | Upscales the output to 1920×1080 if the source is smaller |
+| **Scale to 1080p** | Upscales the output to 1920×1080 if the source is smaller. This is just blowing the video up, so Yarg doesn't try to stretch it. It preserve original ratio |
 
 ---
 
