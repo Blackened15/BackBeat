@@ -49,14 +49,15 @@ If Python is not installed yet (Windows):
 
 ## Usage
 
-1. Create a `backbeat.csv` in the same folder as `backbeat.py` (see format below)
-2. Run the script:
+1. Run the script (optionally with your own CSV, or use the included `backbeat.csv`):
    ```
    python backbeat.py
    ```
-3. A settings dialog will appear — choose your browser for cookies, quality, output format, and encode profile
-4. If your CSV has `Source` values, a second dialog appears so you can process one source (e.g. `RB1`) or `All`
-5. Click **Start/Process** and let it run
+   The included `backbeat.csv` contains all songs with official music videos from Rock Band 1, 2, and 3. To use your own playlist, create a new CSV in the same folder as `backbeat.py` (see [CSV Format](#csv-format) below).
+
+2. A settings dialog will appear — choose your browser for cookies, quality, output format, and encode profile
+3. If your CSV has `Source` values, a second dialog appears so you can process one source (e.g. `RB1`) or `All`
+4. Click **Start/Process** and let it run
 
 ---
 
@@ -87,8 +88,8 @@ RB2,another_song,https://youtu.be/...,500,98.5,no
 |---|---|
 | **Browser cookies** | Lets yt-dlp authenticate using your browser session. Unlocks age-restricted and members-only videos. If you have YouTube Premium, also grants access to higher-bitrate streams. Pick the browser you use for YouTube, or *None* to skip. |
 | **Quality** | Best available / 1080p max / 720p max / 480p max / Smallest file |
-| **Output format** | **MP4** — fast encode, widely compatible. **WEBM** — slower encode, smaller file; required on Linux. |
-| **WebM encode profile** | **Auto** adjusts by source resolution. **Fast / Small** favors speed and smaller files. **Medium / Medium** balances speed and quality. **Slow / Big** favors highest quality and larger files. |
+| **Output format** | **MP4** — fast encode (libx264, CRF 18), widely compatible. **WEBM** — slower encode (VP8), smaller file; required on Linux. |
+| **WebM encode profile** | *(Only applies to WEBM output format.)* **Auto** adjusts by source resolution. **Fast / Small** favors speed and smaller files. **Medium / Medium** balances speed and quality. **Slow / Big** favors highest quality and larger files. |
 
 ---
 
