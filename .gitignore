@@ -19,6 +19,13 @@ bin/
 # Temp/download artifacts
 *_raw_*.mp4
 *_raw_*.webm
+*.mp4
+*.webm
+
+# Ignore top-level output folders, but keep docs tracked
+/*/
+!/docs/
+!/docs/**
 
 # Excel working files
 *.xlsx

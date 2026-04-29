@@ -58,7 +58,8 @@ If Python is not installed yet (Windows):
    The included `backbeat.csv` contains all songs with official music videos from Rock Band 1, 2, and 3. To use your own playlist, create a new CSV in the same folder as `backbeat.py` (see [CSV Format](#csv-format) below).
 
 2. A settings dialog will appear — choose your browser for cookies, quality, output format, and encode profile
-3. If your CSV has `Source` values, a second dialog appears so you can process one source (e.g. `RB1`) or `All`
+3. A second dialog appears where you choose which CSV file in the script folder to use
+4. The same dialog also lets you process one `Source` (e.g. `RB1`) or `All`; when you switch CSV files, the `Source` list refreshes automatically from that file
 4. Click **Start/Process** and let it run
 
 ---
@@ -81,6 +82,8 @@ RB2,another_song,https://youtu.be/...,500,98.5,no
 | `Remove Black Bar` | `yes` / `no` — whether to run cropdetect and remove letterboxing |
 
 `Source` matching is case-insensitive in the picker (`rb1` and `RB1` are treated the same).
+
+If you keep multiple playlists in the script folder, BackBeat will list all `.csv` files in the picker and load the selected one on demand.
 
 ---
 
@@ -112,7 +115,7 @@ When **Auto** is selected, profiles are chosen by source height:
 
 ## Output
 
-Encoded files are written to the same folder as the script, named after the `Filename` column in the CSV.
+Encoded files are written beside the script, named after the `Filename` column in the selected CSV.
 
 ---
 

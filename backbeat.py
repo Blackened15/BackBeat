@@ -442,30 +442,65 @@ def _unique_csv_values(rows, column_name):
             values.append(value)
     return values
 
-def open_source_dialog(source_values):
-    """Prompt for which CSV source group to process."""
-    options = ['All', *source_values]
+def list_csv_files(folder):
+    """Return CSV filenames in a folder, sorted with backbeat.csv first if present."""
+    files = [name for name in os.listdir(folder) if name.lower().endswith('.csv')]
+    files.sort(key=lambda name: (name.casefold() != 'backbeat.csv', name.casefold()))
+    return files
+
+def load_csv_rows(csv_path):
+    """Read CSV rows from disk using the existing BOM-tolerant encoding."""
+    with open(csv_path, newline='', encoding='utf-8-sig') as f:
+        reader = csv.DictReader(f)
+        return list(reader)
+
+def open_csv_source_dialog(csv_folder):
+    """Prompt for which CSV file and Source group to process."""
+    csv_files = list_csv_files(csv_folder)
+    if not csv_files:
+        return None
 
     root = tk.Tk()
-    root.title('BackBeat Source Filter')
+    root.title('BackBeat CSV + Source Filter')
     root.resizable(False, False)
 
     frame = ttk.Frame(root, padding=16)
     frame.grid(row=0, column=0, sticky='nsew')
 
+    csv_var = tk.StringVar(value=csv_files[0])
     source_var = tk.StringVar(value='All')
+    detail_var = tk.StringVar(value='')
     result = {}
+    current_rows = []
+
+    csv_lbl = ttk.Label(frame, text='CSV file')
+    csv_lbl.grid(row=0, column=0, sticky='w', pady=(0, 4))
+    csv_box = ttk.Combobox(
+        frame,
+        textvariable=csv_var,
+        values=csv_files,
+        state='readonly',
+        width=34,
+    )
+    csv_box.grid(row=1, column=0, sticky='ew', pady=(0, 10))
+    _CSV_TIP = (
+        'Choose which CSV file in the script folder to process.\n\n'
+        'When you switch CSV files, the Source list below refreshes automatically '
+        'from that file.'
+    )
+    _Tooltip(csv_lbl, _CSV_TIP)
+    _Tooltip(csv_box, _CSV_TIP)
 
     source_lbl = ttk.Label(frame, text='Source')
-    source_lbl.grid(row=0, column=0, sticky='w', pady=(0, 4))
+    source_lbl.grid(row=2, column=0, sticky='w', pady=(0, 4))
     source_box = ttk.Combobox(
         frame,
         textvariable=source_var,
-        values=options,
+        values=['All'],
         state='readonly',
-        width=22,
+        width=34,
     )
-    source_box.grid(row=1, column=0, sticky='ew', pady=(0, 12))
+    source_box.grid(row=3, column=0, sticky='ew', pady=(0, 6))
     _SOURCE_TIP = (
         'Choose which setlist source to process from the CSV.\n\n'
         'All processes every row.\n'
@@ -474,8 +509,41 @@ def open_source_dialog(source_values):
     _Tooltip(source_lbl, _SOURCE_TIP)
     _Tooltip(source_box, _SOURCE_TIP)
 
+    detail_lbl = ttk.Label(frame, textvariable=detail_var, foreground='gray')
+    detail_lbl.grid(row=4, column=0, sticky='w', pady=(0, 12))
+
+    def refresh_sources(_event=None):
+        nonlocal current_rows
+        csv_name = csv_var.get().strip()
+        csv_path = os.path.join(csv_folder, csv_name)
+
+        try:
+            current_rows = load_csv_rows(csv_path)
+        except Exception as exc:
+            current_rows = []
+            source_box.configure(values=['All'])
+            source_var.set('All')
+            detail_var.set(f'Could not read {csv_name}: {exc}')
+            return
+
+        source_values = _unique_csv_values(current_rows, 'Source')
+        options = ['All', *source_values]
+        source_box.configure(values=options)
+        if source_var.get() not in options:
+            source_var.set('All')
+
+        row_count = len(current_rows)
+        source_count = len(source_values)
+        detail_var.set(f'{row_count} row(s) loaded, {source_count} source value(s) found')
+
     def submit():
+        csv_name = csv_var.get().strip()
+        if not csv_name:
+            return
         result['source'] = source_var.get()
+        result['csv_name'] = csv_name
+        result['csv_path'] = os.path.join(csv_folder, csv_name)
+        result['rows'] = current_rows
         root.destroy()
 
     def cancel():
@@ -483,7 +551,7 @@ def open_source_dialog(source_values):
         root.destroy()
 
     button_frame = ttk.Frame(frame)
-    button_frame.grid(row=2, column=0, sticky='e')
+    button_frame.grid(row=5, column=0, sticky='e')
     ttk.Button(button_frame, text='Process', command=submit).grid(row=0, column=0, padx=(0, 8))
     ttk.Button(button_frame, text='Cancel', command=cancel).grid(row=0, column=1)
 
@@ -492,7 +560,9 @@ def open_source_dialog(source_values):
     root.protocol('WM_DELETE_WINDOW', cancel)
     root.bind('<Return>', lambda _event: submit())
     root.bind('<Escape>', lambda _event: cancel())
-    source_box.focus_set()
+    csv_box.bind('<<ComboboxSelected>>', refresh_sources)
+    refresh_sources()
+    csv_box.focus_set()
     root.mainloop()
     return result or None
 
@@ -581,8 +651,9 @@ def output_canvas_size(width, height, include_letterbox):
         return out_w, out_h
     return width, height
 
-def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
+def process_video(output_name, url, delay_ms, speed_pct, remove_bars, output_dir=FOLDER):
     """Download and post-process one video. Returns True on success."""
+    os.makedirs(output_dir, exist_ok=True)
     speed_factor = speed_pct / 100.0
     sec          = abs(delay_ms) / 1000.0
 
@@ -615,7 +686,7 @@ def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
         return False
 
     for src in files:
-        dst = os.path.join(FOLDER, output_name + f'.{FMT}')
+        dst = os.path.join(output_dir, output_name + f'.{FMT}')
 
         log_song(output_name, 'Post-processing: ' + os.path.basename(src))
 
@@ -761,37 +832,35 @@ def main():
     FMT = settings['format']
     ENCODE_PROFILE = settings['encode_profile']
 
-    csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backbeat.csv')
-    if not os.path.exists(csv_path):
-        print(f'\033[1;91mERROR: CSV not found at {csv_path}\033[0m')
-        print('Place backbeat.csv in the same folder as this script.')
+    csv_folder = os.path.dirname(os.path.abspath(__file__))
+    csv_files = list_csv_files(csv_folder)
+    if not csv_files:
+        print(f'\033[1;91mERROR: No CSV files found in {csv_folder}\033[0m')
+        print('Place one or more .csv files in the same folder as this script.')
         input('Press Enter to close...')
         sys.exit(1)
 
-    with open(csv_path, newline='', encoding='utf-8-sig') as f:
-        reader = csv.DictReader(f)
-        rows = list(reader)
+    source_selection = open_csv_source_dialog(csv_folder)
+    if not source_selection:
+        print('CSV/source selection cancelled.')
+        sys.exit(0)
 
-    source_values = _unique_csv_values(rows, 'Source')
-    selected_source = 'All'
-    if source_values:
-        source_selection = open_source_dialog(source_values)
-        if not source_selection:
-            print('Source selection cancelled.')
-            sys.exit(0)
-        selected_source = source_selection['source']
-        if selected_source != 'All':
-            selected_source_folded = selected_source.casefold()
-            rows = [
-                row for row in rows
-                if row.get('Source', '').strip().casefold() == selected_source_folded
-            ]
+    csv_path = source_selection['csv_path']
+    selected_csv = source_selection['csv_name']
+    rows = source_selection['rows']
+    selected_source = source_selection['source']
+    if selected_source != 'All':
+        selected_source_folded = selected_source.casefold()
+        rows = [
+            row for row in rows
+            if row.get('Source', '').strip().casefold() == selected_source_folded
+        ]
 
     total = len(rows)
     log(f'BackBeat — {total} videos to process')
     log(
         f'Settings: browser={BROWSER}  quality={QUALITY}  format={FMT} '
-        f'encode={ENCODE_PROFILE}  source={selected_source}'
+        f'encode={ENCODE_PROFILE}  csv={selected_csv}  source={selected_source}'
     )
 
     if total == 0:
@@ -803,6 +872,7 @@ def main():
 
     for i, row in enumerate(rows, 1):
         filename   = output_basename(row.get('Filename', ''))
+        source_name = row.get('Source', '').strip()
         url        = row.get('Youtube', '').strip()
         delay_raw  = row.get('Delay', '').strip()
         speed_raw  = row.get('Speed', '').strip()
@@ -832,7 +902,12 @@ def main():
         if remove_bars:
             notes.append('crop bars')
 
-        ok = process_video(filename, url, delay_ms, speed_pct, remove_bars)
+        output_dir = FOLDER
+        if selected_source == 'All':
+            source_folder_name = sanitize(source_name) if source_name else 'Unknown_Source'
+            output_dir = os.path.join(FOLDER, source_folder_name)
+
+        ok = process_video(filename, url, delay_ms, speed_pct, remove_bars, output_dir=output_dir)
         results.append((filename, ok, ', '.join(notes) if notes else 'no adjustments'))
 
     # ── Final summary ─────────────────────────────────────────────────────────
