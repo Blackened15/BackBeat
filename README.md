@@ -143,4 +143,4 @@ BackBeat itself is not affiliated with YARG or any rhythm game project.
 
 ## About this project
 
-This tool was **vibe coded** — built through AI-assisted development. The author has some manual coding knowledge but this project leans heavily on that workflow. Use it, fork it, improve it.
+This tool was **vibe coded** — built through AI-assisted development. The author has some manual coding knowledge but this project leans heavily on that workflow. The time saved from rapid development was invested into building the included `backbeat.csv` dataset, which is a time-consuming task to manually curate and sync. Use it, fork it, improve it.
