@@ -20,5 +20,8 @@ bin/
 *_raw_*.mp4
 *_raw_*.webm
 
+# Excel working files
+backbeat.xlsx
+
 # Optional: keep local editor settings out of repo
 .vscode/
