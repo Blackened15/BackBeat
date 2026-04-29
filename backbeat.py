@@ -154,7 +154,7 @@ QUALITY        = 'bestvideo/best'   # video-only, best quality
 FMT            = 'mp4'
 CRF            = '18'
 PRESET         = 'fast'
-SCALE_TO_1080  = True               # always on per spec
+ENCODE_PROFILE = 'Auto'
 CROPDETECT_FRAMES = 200
 BROWSER_CHOICES = {
     'None': None,
@@ -168,6 +168,40 @@ BROWSER_CHOICES = {
     'Brave': 'brave',
     'Whale': 'whale',
 }
+
+def detect_default_browser_choice():
+    """Return settings dialog browser label based on system default browser."""
+    if sys.platform != 'win32':
+        return 'None'
+
+    try:
+        import winreg
+        with winreg.OpenKey(
+            winreg.HKEY_CURRENT_USER,
+            r'Software\Microsoft\Windows\Shell\Associations\UrlAssociations\https\UserChoice',
+        ) as key:
+            prog_id, _ = winreg.QueryValueEx(key, 'ProgId')
+    except Exception:
+        return 'Firefox'
+
+    prog_id = prog_id.lower()
+    token_to_choice = [
+        ('firefox', 'Firefox'),
+        ('chrome', 'Chrome'),
+        ('msedge', 'Edge'),
+        ('brave', 'Brave'),
+        ('vivaldi', 'Vivaldi'),
+        ('opera', 'Opera'),
+        ('chromium', 'Chromium'),
+        ('safari', 'Safari'),
+        ('naverwhale', 'Whale'),
+        ('whale', 'Whale'),
+    ]
+    for token, choice in token_to_choice:
+        if token in prog_id:
+            return choice
+    return 'Firefox'
+
 FORMAT_OPTIONS = ['webm', 'mp4']
 QUALITY_PRESETS = {
     'Best available':  'bestvideo/best',
@@ -176,6 +210,18 @@ QUALITY_PRESETS = {
     '480p max':        'bestvideo[height<=480]/best[height<=480]',
     'Smallest file':   'worstvideo/worst',
 }
+WEBM_PROFILES = {
+    'Fast / Small': {
+        'crf': '10', 'bitrate': '4M', 'maxrate': '6M', 'bufsize': '12M', 'cpu_used': '4'
+    },
+    'Medium / Medium': {
+        'crf': '6', 'bitrate': '6M', 'maxrate': '9M', 'bufsize': '18M', 'cpu_used': '2'
+    },
+    'Slow / Big': {
+        'crf': '4', 'bitrate': '8M', 'maxrate': '12M', 'bufsize': '24M', 'cpu_used': '0'
+    },
+}
+WEBM_PROFILE_OPTIONS = ['Auto', *WEBM_PROFILES.keys()]
 # ──────────────────────────────────────────────────────────────────────────────
 
 PID = str(os.getpid())
@@ -191,9 +237,8 @@ def log_song(title, msg):
 def sanitize(name):
     """Make a string safe to use as a filename."""
     name = re.sub(r'[\\/:*?"<>|＂＜＞]', '', name)
-    name = re.sub(r'\s+', '_', name.strip())
-    name = re.sub(r'_+', '_', name).strip('_')
-    return name[:120]
+    name = re.sub(r'\s+', ' ', name.strip())
+    return name[:120].rstrip(' .')
 
 def output_basename(name):
     """Normalize a CSV filename value to a safe basename without extension."""
@@ -237,10 +282,10 @@ def open_settings_dialog():
     frame = ttk.Frame(root, padding=16)
     frame.grid(row=0, column=0, sticky='nsew')
 
-    browser_var = tk.StringVar(value='Firefox')
+    browser_var = tk.StringVar(value=detect_default_browser_choice())
     quality_label_var = tk.StringVar(value='Best available')
     format_var = tk.StringVar(value='webm')
-    scale_var = tk.BooleanVar(value=True)
+    profile_var = tk.StringVar(value=ENCODE_PROFILE)
     result = {}
 
     browser_lbl = ttk.Label(frame, text='Browser cookies')
@@ -284,22 +329,39 @@ def open_settings_dialog():
     )
     format_box.grid(row=5, column=0, sticky='ew', pady=(0, 10))
     _FORMAT_TIP = (
-        'WEBM — open format, smaller file size, slower to encode.\n'
-        '         Required on Linux (libx264/MP4 may not be available).\n\n'
-        'MP4  — widely compatible, faster to encode, slightly larger files.\n'
-        '         Best choice on Windows/macOS.'
+        'WEBM — recommended default for Unity/YARG compatibility.\n'
+        '         Usually the best choice when your game supports it.\n\n'
+        'MP4  — use only if WEBM is not usable in your setup\n'
+        '         or for external compatibility needs.'
     )
     _Tooltip(format_lbl, _FORMAT_TIP)
     _Tooltip(format_box, _FORMAT_TIP)
 
-    scale_check = ttk.Checkbutton(frame, text='Scale to 1080p', variable=scale_var)
-    scale_check.grid(row=6, column=0, sticky='w', pady=(0, 12))
+    profile_lbl = ttk.Label(frame, text='WebM encode profile')
+    profile_lbl.grid(row=6, column=0, sticky='w', pady=(0, 4))
+    profile_box = ttk.Combobox(
+        frame,
+        textvariable=profile_var,
+        values=WEBM_PROFILE_OPTIONS,
+        state='readonly',
+        width=22,
+    )
+    profile_box.grid(row=7, column=0, sticky='ew', pady=(0, 10))
+    _PROFILE_TIP = (
+        'Applies to WebM/VP8 output only.\n\n'
+        'Auto: adjusts quality by source resolution.\n'
+        'Fast / Small: fastest encode, smallest files, lower detail.\n'
+        'Medium / Medium: balanced quality and speed.\n'
+        'Slow / Big: best detail, slowest encode, largest files.'
+    )
+    _Tooltip(profile_lbl, _PROFILE_TIP)
+    _Tooltip(profile_box, _PROFILE_TIP)
 
     def submit():
         result['browser'] = BROWSER_CHOICES[browser_var.get()]
         result['quality'] = QUALITY_PRESETS[quality_label_var.get()]
         result['format'] = format_var.get()
-        result['scale_to_1080'] = scale_var.get()
+        result['encode_profile'] = profile_var.get()
         root.destroy()
 
     def cancel():
@@ -307,7 +369,7 @@ def open_settings_dialog():
         root.destroy()
 
     button_frame = ttk.Frame(frame)
-    button_frame.grid(row=7, column=0, sticky='e')
+    button_frame.grid(row=8, column=0, sticky='e')
     ttk.Button(button_frame, text='Start', command=submit).grid(row=0, column=0, padx=(0, 8))
     ttk.Button(button_frame, text='Cancel', command=cancel).grid(row=0, column=1)
 
@@ -320,10 +382,99 @@ def open_settings_dialog():
     root.mainloop()
     return result or None
 
-def video_output_args(fmt):
+def _unique_csv_values(rows, column_name):
+    """Return distinct non-empty CSV values for a named column in first-seen order."""
+    seen = set()
+    values = []
+    for row in rows:
+        value = row.get(column_name, '').strip()
+        folded = value.casefold()
+        if value and folded not in seen:
+            seen.add(folded)
+            values.append(value)
+    return values
+
+def open_source_dialog(source_values):
+    """Prompt for which CSV source group to process."""
+    options = ['All', *source_values]
+
+    root = tk.Tk()
+    root.title('BackBeat Source Filter')
+    root.resizable(False, False)
+
+    frame = ttk.Frame(root, padding=16)
+    frame.grid(row=0, column=0, sticky='nsew')
+
+    source_var = tk.StringVar(value='All')
+    result = {}
+
+    source_lbl = ttk.Label(frame, text='Source')
+    source_lbl.grid(row=0, column=0, sticky='w', pady=(0, 4))
+    source_box = ttk.Combobox(
+        frame,
+        textvariable=source_var,
+        values=options,
+        state='readonly',
+        width=22,
+    )
+    source_box.grid(row=1, column=0, sticky='ew', pady=(0, 12))
+    _SOURCE_TIP = (
+        'Choose which setlist source to process from the CSV.\n\n'
+        'All processes every row.\n'
+        'Any other option only processes rows where the Source column matches exactly.'
+    )
+    _Tooltip(source_lbl, _SOURCE_TIP)
+    _Tooltip(source_box, _SOURCE_TIP)
+
+    def submit():
+        result['source'] = source_var.get()
+        root.destroy()
+
+    def cancel():
+        result.clear()
+        root.destroy()
+
+    button_frame = ttk.Frame(frame)
+    button_frame.grid(row=2, column=0, sticky='e')
+    ttk.Button(button_frame, text='Process', command=submit).grid(row=0, column=0, padx=(0, 8))
+    ttk.Button(button_frame, text='Cancel', command=cancel).grid(row=0, column=1)
+
+    frame.columnconfigure(0, weight=1)
+    root.columnconfigure(0, weight=1)
+    root.protocol('WM_DELETE_WINDOW', cancel)
+    root.bind('<Return>', lambda _event: submit())
+    root.bind('<Escape>', lambda _event: cancel())
+    source_box.focus_set()
+    root.mainloop()
+    return result or None
+
+def resolve_webm_profile(width, height):
+    """Pick an effective WebM profile for this source size."""
+    if ENCODE_PROFILE != 'Auto':
+        return ENCODE_PROFILE
+
+    h = max(height, 1)
+    if h <= 480:
+        return 'Fast / Small'
+    if h <= 1080:
+        return 'Medium / Medium'
+    return 'Slow / Big'
+
+def video_output_args(fmt, webm_profile=None):
     """Return ffmpeg video encoding args for the selected container."""
     if fmt == 'webm':
-        return ['-c:v', 'libvpx', '-crf', '10', '-b:v', '2M']
+        # VP8 for YARG compatibility; selected profile tunes speed/quality/size trade-off.
+        selected = webm_profile or ENCODE_PROFILE
+        p = WEBM_PROFILES.get(selected, WEBM_PROFILES['Medium / Medium'])
+        return [
+            '-c:v', 'libvpx',
+            '-crf', p['crf'],
+            '-b:v', p['bitrate'],
+            '-maxrate', p['maxrate'],
+            '-bufsize', p['bufsize'],
+            '-deadline', 'good',
+            '-cpu-used', p['cpu_used'],
+        ]
     return ['-c:v', 'libx264', '-crf', CRF, '-preset', PRESET]
 
 def probe(src, entry):
@@ -349,25 +500,38 @@ def cropdetect(src):
     val = lines[-1].split('crop=')[-1].split()[0]
     return 'crop=' + val
 
-# upscale filter — setsar=1 prevents SAR mismatch when concatenating with black
-UP_FILTER = (
-    r'scale=ceil(iw*min(1920/iw\,1080/ih)/2)*2'
-    r':ceil(ih*min(1920/iw\,1080/ih)/2)*2'
-    r':flags=lanczos'
-    r',pad=1920:1080:(ow-iw)/2:(oh-ih)/2:black'
+# Pad to 16:9 without scaling content. Keeps original pixels while adding black bars.
+LETTERBOX_16_9_FILTER = (
+    r'pad='
+    r'if(gte(iw/ih\,16/9)\,iw\,ceil(ih*16/9/2)*2)'
+    r':if(gte(iw/ih\,16/9)\,ceil(iw*9/16/2)*2\,ih)'
+    r':(ow-iw)/2:(oh-ih)/2:black'
     r',setsar=1'
 )
 
-def build_vf(crop_filter, speed_factor, include_upscale):
-    """Build the -vf filter string in the correct order: crop → speed → upscale."""
+def build_vf(crop_filter, speed_factor, include_letterbox=False):
+    """Build the -vf filter string in the order: crop → speed → pad."""
     parts = []
     if crop_filter:
         parts.append(crop_filter)
     if abs(speed_factor - 1.0) > 1e-6:
         parts.append(f'setpts={1/speed_factor:.6f}*PTS')
-    if include_upscale:
-        parts.append(UP_FILTER)
+    if include_letterbox:
+        parts.append(LETTERBOX_16_9_FILTER)
     return ','.join(parts) if parts else None
+
+def output_canvas_size(width, height, include_letterbox):
+    """Return final output frame size after optional letterbox filter."""
+    if include_letterbox:
+        # Mirror LETTERBOX_16_9_FILTER output sizing so concat inputs match exactly.
+        if width * 9 >= height * 16:
+            out_w = width
+            out_h = ((width * 9 + 31) // 32) * 2
+        else:
+            out_w = ((height * 8 + 8) // 9) * 2
+            out_h = height
+        return out_w, out_h
+    return width, height
 
 def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
     """Download and post-process one video. Returns True on success."""
@@ -431,24 +595,30 @@ def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
             if crop_filter:
                 val = crop_filter.replace('crop=', '')
                 cw, ch = int(val.split(':')[0]), int(val.split(':')[1])
-                vw, vh = cw, ch   # update for 1080p check
+                vw, vh = cw, ch   # use cropped dimensions for letterbox sizing
                 log_song(output_name, f'Black bars detected — cropping to {cw}x{ch}')
             else:
                 log_song(output_name, 'No black bars detected')
 
-        # Determine if upscale needed
-        needs_upscale = SCALE_TO_1080 and not (vw >= 1920 and vh >= 1080)
-        if SCALE_TO_1080 and not needs_upscale:
-            log_song(output_name, f'Already >= 1080p — no upscale needed')
-        elif needs_upscale:
-            log_song(output_name, f'Scaling {vw}x{vh} → 1920x1080')
+        # Preserve source resolution, and add 16:9 letterbox when needed.
+        is_widescreen = (vw * 9 == vh * 16)
+        use_letterbox = not is_widescreen
+        if use_letterbox:
+            log_song(output_name, 'Preserving resolution with 16:9 letterbox')
+
+        active_webm_profile = resolve_webm_profile(vw, vh)
+        out_w, out_h = output_canvas_size(vw, vh, use_letterbox)
+        if FMT == 'webm':
+            log_song(output_name, f'Encode profile: {active_webm_profile}')
+
+        if use_letterbox:
+            log_song(output_name, f'Letterboxing {vw}x{vh} → {out_w}x{out_h} (16:9)')
 
         # ── Step 3: ffmpeg post-process ───────────────────────────────────────
         try:
             if delay_ms < 0:
                 # Prepend black frames
-                black_w = 1920 if needs_upscale else vw
-                black_h = 1080 if needs_upscale else vh
+                black_w, black_h = out_w, out_h
                 log_song(output_name, f'Prepending {abs(delay_ms)}ms black frames')
 
                 # Build filter_complex
@@ -457,8 +627,8 @@ def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
                     vfilters.append(crop_filter)
                 if abs(speed_factor - 1.0) > 1e-6:
                     vfilters.append(f'setpts={1/speed_factor:.6f}*PTS')
-                if needs_upscale:
-                    vfilters.append(UP_FILTER)
+                if use_letterbox:
+                    vfilters.append(LETTERBOX_16_9_FILTER)
 
                 if vfilters:
                     fc = f'[1:v]{",".join(vfilters)}[vproc];[0:v][vproc]concat=n=2:v=1:a=0[v]'
@@ -473,7 +643,7 @@ def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
                     '-filter_complex', fc,
                     '-map', '[v]',
                     '-an',
-                    *video_output_args(FMT),
+                    *video_output_args(FMT, active_webm_profile),
                     dst,
                 ], check=True)
 
@@ -488,27 +658,27 @@ def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
                     vfilters.append(f'setpts={1/speed_factor:.6f}*PTS')
                 vfilters.append(f'trim=start={sec:.6f}')
                 vfilters.append('setpts=PTS-STARTPTS')
-                if needs_upscale:
-                    vfilters.append(UP_FILTER)
+                if use_letterbox:
+                    vfilters.append(LETTERBOX_16_9_FILTER)
 
                 subprocess.run([
                     FFMPEG,
                     '-i', src,
                     '-vf', ','.join(vfilters),
                     '-an',
-                    *video_output_args(FMT),
+                    *video_output_args(FMT, active_webm_profile),
                     dst,
                 ], check=True)
 
             else:
-                # No timing change — speed and/or crop and/or upscale only
-                vf = build_vf(crop_filter, speed_factor, needs_upscale)
+                # No timing change — speed and/or crop and/or letterbox only
+                vf = build_vf(crop_filter, speed_factor, use_letterbox)
                 if vf:
                     subprocess.run([
                         FFMPEG, '-i', src,
                         '-vf', vf,
                         '-an',
-                        *video_output_args(FMT),
+                        *video_output_args(FMT, active_webm_profile),
                         dst,
                     ], check=True)
                 else:
@@ -531,7 +701,7 @@ def process_video(output_name, url, delay_ms, speed_pct, remove_bars):
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 def main():
-    global BROWSER, QUALITY, FMT, SCALE_TO_1080
+    global BROWSER, QUALITY, FMT, ENCODE_PROFILE
 
     settings = open_settings_dialog()
     if not settings:
@@ -541,7 +711,7 @@ def main():
     BROWSER = settings['browser']
     QUALITY = settings['quality']
     FMT = settings['format']
-    SCALE_TO_1080 = settings['scale_to_1080']
+    ENCODE_PROFILE = settings['encode_profile']
 
     csv_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'backbeat.csv')
     if not os.path.exists(csv_path):
@@ -554,9 +724,32 @@ def main():
         reader = csv.DictReader(f)
         rows = list(reader)
 
+    source_values = _unique_csv_values(rows, 'Source')
+    selected_source = 'All'
+    if source_values:
+        source_selection = open_source_dialog(source_values)
+        if not source_selection:
+            print('Source selection cancelled.')
+            sys.exit(0)
+        selected_source = source_selection['source']
+        if selected_source != 'All':
+            selected_source_folded = selected_source.casefold()
+            rows = [
+                row for row in rows
+                if row.get('Source', '').strip().casefold() == selected_source_folded
+            ]
+
     total = len(rows)
     log(f'BackBeat — {total} videos to process')
-    log(f'Settings: browser={BROWSER}  quality={QUALITY}  format={FMT}  scale1080={SCALE_TO_1080}')
+    log(
+        f'Settings: browser={BROWSER}  quality={QUALITY}  format={FMT} '
+        f'encode={ENCODE_PROFILE}  source={selected_source}'
+    )
+
+    if total == 0:
+        print(f'No rows matched source "{selected_source}".')
+        input('Press Enter to close...')
+        sys.exit(0)
 
     results = []   # list of (title, ok, notes)
 

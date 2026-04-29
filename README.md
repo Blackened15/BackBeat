@@ -23,7 +23,7 @@ Given a simple CSV playlist, BackBeat downloads each video at your chosen qualit
 - Detects and removes black bars (cropdetect)
 - Adjusts playback speed
 - Trims or pads the start with a black frame delay
-- Upscales to 1080p if needed
+- Pads to a 16:9 frame with black bars when needed (preserves source resolution)
 - Encodes to MP4 or WEBM
 
 ---
@@ -54,26 +54,30 @@ If Python is not installed yet (Windows):
    ```
    python backbeat.py
    ```
-3. A settings dialog will appear — choose your browser for cookies, quality, output format, and whether to upscale to 1080p
-4. Click **Start** and let it run
+3. A settings dialog will appear — choose your browser for cookies, quality, output format, and encode profile
+4. If your CSV has `Source` values, a second dialog appears so you can process one source (e.g. `RB1`) or `All`
+5. Click **Start/Process** and let it run
 
 ---
 
 ## CSV Format
 
 ```csv
-Filename,Youtube,Delay,Speed,Remove Black Bar
-my_video,https://www.youtube.com/watch?v=...,0,100,yes
-another_song,https://youtu.be/...,500,98.5,no
+Source,Filename,Youtube,Delay,Speed,Remove Black Bar
+RB1,my_video,https://www.youtube.com/watch?v=...,0,100,yes
+RB2,another_song,https://youtu.be/...,500,98.5,no
 ```
 
 | Column | Description |
 |---|---|
+| `Source` | Group/setlist label used by the source filter dialog (e.g. `RB1`, `RB2`).|
 | `Filename` | Output filename (no extension needed, Unicode-safe) |
 | `Youtube` | Full YouTube URL |
 | `Delay` | Milliseconds to trim (`+`) or pad with black (`-`) at the start |
 | `Speed` | Playback speed as a percentage (e.g. `98.5` = slightly slower) |
 | `Remove Black Bar` | `yes` / `no` — whether to run cropdetect and remove letterboxing |
+
+`Source` matching is case-insensitive in the picker (`rb1` and `RB1` are treated the same).
 
 ---
 
@@ -84,7 +88,22 @@ another_song,https://youtu.be/...,500,98.5,no
 | **Browser cookies** | Lets yt-dlp authenticate using your browser session. Unlocks age-restricted and members-only videos. If you have YouTube Premium, also grants access to higher-bitrate streams. Pick the browser you use for YouTube, or *None* to skip. |
 | **Quality** | Best available / 1080p max / 720p max / 480p max / Smallest file |
 | **Output format** | **MP4** — fast encode, widely compatible. **WEBM** — slower encode, smaller file; required on Linux. |
-| **Scale to 1080p** | Upscales the output to 1920×1080 if the source is smaller. This is just blowing the video up, so Yarg doesn't try to stretch it. It preserve original ratio |
+| **WebM encode profile** | **Auto** adjusts by source resolution. **Fast / Small** favors speed and smaller files. **Medium / Medium** balances speed and quality. **Slow / Big** favors highest quality and larger files. |
+
+---
+
+## WebM Encode Profiles
+
+| Profile | Target Bitrate | Max Bitrate | Best For |
+|---|---|---|---|
+| **Fast / Small** | 4 Mbps | 6 Mbps | Quick encodes, small files, lower quality |
+| **Medium / Medium** | 6 Mbps | 9 Mbps | Balanced speed and quality (recommended) |
+| **Slow / Big** | 8 Mbps | 12 Mbps | Highest quality, larger files, slower encodes |
+
+When **Auto** is selected, profiles are chosen by source height:
+- **≤ 480p** → Fast / Small
+- **≤ 1080p** → Medium / Medium
+- **> 1080p** → Slow / Big
 
 ---
 
