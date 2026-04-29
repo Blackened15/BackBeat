@@ -88,7 +88,7 @@ RB2,another_song,https://youtu.be/...,500,98.5,no
 |---|---|
 | **Browser cookies** | Lets yt-dlp authenticate using your browser session. Unlocks age-restricted and members-only videos. If you have YouTube Premium, also grants access to higher-bitrate streams. Pick the browser you use for YouTube, or *None* to skip. |
 | **Quality** | Best available / 1080p max / 720p max / 480p max / Smallest file |
-| **Output format** | **MP4** — fast encode (libx264, CRF 18), widely compatible. **WEBM** — slower encode (VP8), smaller file; required on Linux. |
+| **Output format** | **WEBM** (VP8) — recommended for rhythm games, smaller files, slower encode. **MP4** (libx264) — fallback option if WEBM is not compatible with your use case; faster encode but larger files. |
 | **WebM encode profile** | *(Only applies to WEBM output format.)* **Auto** adjusts by source resolution. **Fast / Small** favors speed and smaller files. **Medium / Medium** balances speed and quality. **Slow / Big** favors highest quality and larger files. |
 
 ---
