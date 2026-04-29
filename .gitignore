@@ -21,7 +21,7 @@ bin/
 *_raw_*.webm
 
 # Excel working files
-backbeat.xlsx
+*.xlsx
 
 # Optional: keep local editor settings out of repo
 .vscode/

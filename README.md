@@ -11,6 +11,8 @@ Batch-download and post-process YouTube music videos for use as **in-game backgr
 
 I've done my best to sync each music video to its in-game version, but this is imperfect by nature — **music videos are often a different edit than the track on Rock Band** (different length intro, cut verses, alternate mix, etc.). The timing values in `backbeat.csv` are approximations, and I have **not manually tested every video in-game**.
 
+In practice, many songs are adjusted to align on exact visual frames, and some speed corrections are extremely fine-grained (sometimes more precise than one-tenth of a percent).
+
 If you find any of the following, **please open an issue on GitHub** — corrections and improvements are very welcome:
 
 - A better YouTube source for a video

@@ -237,13 +237,12 @@ def log_song(title, msg):
 def sanitize(name):
     """Make a string safe to use as a filename."""
     name = re.sub(r'[\\/:*?"<>|＂＜＞]', '', name)
-    name = re.sub(r'\s+', ' ', name.strip())
-    return name[:120].rstrip(' .')
+    name = name.strip()
+    return name[:120]
 
 def output_basename(name):
-    """Normalize a CSV filename value to a safe basename without extension."""
-    base = os.path.splitext(name.strip())[0]
-    return sanitize(base)
+    """Normalize a CSV filename value to a safe basename."""
+    return sanitize(name.strip())
 
 
 class _Tooltip:
