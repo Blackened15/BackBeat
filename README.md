@@ -138,6 +138,7 @@ BackBeat downloads the following tools automatically into `./bin/` if they are n
 |---|---|---|
 | yt-dlp | The Unlicense (public domain) | https://github.com/yt-dlp/yt-dlp |
 | ffmpeg | GPL v2+ (BtbN full build) | https://github.com/BtbN/FFmpeg-Builds |
+| Deno (optional) | MIT | https://github.com/denoland/deno |
 
 BackBeat itself is not affiliated with YARG or any rhythm game project.
 
