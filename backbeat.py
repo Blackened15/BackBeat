@@ -24,6 +24,17 @@ def _find(name):
         return local
     return shutil.which(name)  # None if not in PATH
 
+def _has_js_runtime():
+    """Return True if a supported JS runtime is available for yt-dlp."""
+    names = ['node', 'deno', 'bun']
+    ext = '.exe' if sys.platform == 'win32' else ''
+    for n in names:
+        if os.path.isfile(os.path.join(_BIN_DIR, n + ext)):
+            return True
+        if shutil.which(n):
+            return True
+    return False
+
 def _download_tools(missing):
     """Download yt-dlp and/or ffmpeg into ./bin/ with a Tkinter progress window."""
     os.makedirs(_BIN_DIR, exist_ok=True)
@@ -59,6 +70,7 @@ def _download_tools(missing):
     ytdlp_path   = os.path.join(_BIN_DIR, 'yt-dlp.exe'   if is_win else 'yt-dlp')
     ffmpeg_path  = os.path.join(_BIN_DIR, 'ffmpeg.exe'   if is_win else 'ffmpeg')
     ffprobe_path = os.path.join(_BIN_DIR, 'ffprobe.exe'  if is_win else 'ffprobe')
+    deno_path    = os.path.join(_BIN_DIR, 'deno.exe'     if is_win else 'deno')
 
     need_ytdlp  = 'yt-dlp'  in missing
     need_ffmpeg = 'ffmpeg'  in missing or 'ffprobe' in missing
@@ -100,6 +112,43 @@ def _download_tools(missing):
                         with zf.open(entry) as src, open(ffprobe_path, 'wb') as dst:
                             dst.write(src.read())
             os.remove(zip_tmp)
+
+        # Optional helper for yt-dlp on fresh Windows machines.
+        if is_win and need_ytdlp and not _has_js_runtime():
+            add_deno = _mb.askyesno(
+                'Optional JavaScript runtime',
+                'yt-dlp may show a warning about missing JavaScript runtimes on some YouTube videos.\n\n'
+                'Install optional Deno now into .\\bin\\ to reduce extraction issues?',
+                parent=win,
+            )
+            if add_deno:
+                try:
+                    deno_zip = os.path.join(tempfile.gettempdir(), 'deno-backbeat.zip')
+                    _fetch(
+                        'https://github.com/denoland/deno/releases/latest/download/deno-x86_64-pc-windows-msvc.zip',
+                        deno_zip,
+                        'Downloading optional Deno runtime...',
+                        95, 99,
+                    )
+                    status_var.set('Extracting Deno...')
+                    detail_var.set('')
+                    win.update()
+                    with zipfile.ZipFile(deno_zip) as zf:
+                        for entry in zf.namelist():
+                            if entry.endswith('/deno.exe') or entry == 'deno.exe':
+                                with zf.open(entry) as src, open(deno_path, 'wb') as dst:
+                                    dst.write(src.read())
+                                break
+                        else:
+                            raise RuntimeError('deno.exe was not found in archive')
+                    os.remove(deno_zip)
+                except Exception as deno_exc:
+                    _mb.showwarning(
+                        'Deno install skipped',
+                        f'Could not install optional Deno runtime:\n{deno_exc}\n\n'
+                        'BackBeat will still work; yt-dlp may continue to show JS runtime warnings.',
+                        parent=win,
+                    )
 
         bar['value'] = 100
         status_var.set('Done!')
