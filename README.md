@@ -58,9 +58,15 @@ If Python is not installed yet (Windows):
    The included `backbeat.csv` contains all songs with official music videos from Rock Band 1, 2, and 3. To use your own playlist, create a new CSV in the same folder as `backbeat.py` (see [CSV Format](#csv-format) below).
 
 2. A settings dialog will appear — choose your browser for cookies, quality, output format, and encode profile
-3. A second dialog appears where you choose which CSV file in the script folder to use
-4. The same dialog also lets you process one `Source` (e.g. `RB1`) or `All`; when you switch CSV files, the `Source` list refreshes automatically from that file
-4. Click **Start/Process** and let it run
+
+3. A second dialog appears where you:
+   - Choose which **CSV file** in the script folder to use (all `.csv` files are listed; when you switch files, the `Source` list refreshes automatically)
+   - Select which **Source** to process (e.g. `RB1`, `RB2`, or `All`)
+   - See a **row count** showing how many songs are in the selected source and how many will actually be encoded (accounting for videos you've already processed)
+   - Optionally check **"Ignore save file"** to re-encode all songs regardless of prior history
+   - Optionally check **"Mark all as processed"** if you've already encoded these videos — this updates the cache without encoding anything
+
+4. Click **Process** and let it run
 
 ---
 
@@ -84,6 +90,30 @@ RB2,another_song,https://youtu.be/...,500,98.5,no
 `Source` matching is case-insensitive in the picker (`rb1` and `RB1` are treated the same).
 
 If you keep multiple playlists in the script folder, BackBeat will list all `.csv` files in the picker and load the selected one on demand.
+
+---
+
+## Processing Cache
+
+BackBeat creates a file called `backbeat_processed.csv` to track which videos have already been encoded. This prevents re-encoding the same video when you run the script multiple times.
+
+### Row Count Display
+
+Before you click **Process**, the dialog shows:
+- **Total rows in source** — how many rows match your selected Source
+- **Rows to process** — how many of those will actually be encoded (excludes videos already in the cache)
+
+The count updates automatically when you change the Source or toggle the **"Ignore save file"** checkbox.
+
+### Ignore Save File
+
+Check this box if you want to re-encode every video in the selection, even if it's already in the cache. Useful if you've changed your quality or encode settings and want to re-do previous runs.
+
+### Mark All as Processed
+
+Use this if you've already encoded these videos manually or with another tool. When checked, the script adds all selected rows to the processed cache **without encoding anything**, then exits. On your next run, those rows will be skipped automatically.
+
+**Only use this if you know what you're doing.** If unsure, leave it off.
 
 ---
 
@@ -116,6 +146,8 @@ When **Auto** is selected, profiles are chosen by source height:
 ## Output
 
 Encoded files are written beside the script, named after the `Filename` column in the selected CSV.
+
+When processing **All** sources at once, files are organized into subfolders by their `Source` value (e.g. `RB1/`, `RB2/`, `RB3/`). When processing a single source, files go directly beside the script.
 
 ---
 

@@ -444,7 +444,7 @@ def _unique_csv_values(rows, column_name):
 
 def list_csv_files(folder):
     """Return CSV filenames in a folder, sorted with backbeat.csv first if present."""
-    files = [name for name in os.listdir(folder) if name.lower().endswith('.csv')]
+    files = [name for name in os.listdir(folder) if name.lower().endswith('.csv') and name.lower() != 'backbeat_processed.csv']
     files.sort(key=lambda name: (name.casefold() != 'backbeat.csv', name.casefold()))
     return files
 
@@ -453,6 +453,36 @@ def load_csv_rows(csv_path):
     with open(csv_path, newline='', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f)
         return list(reader)
+
+def load_processed_csv(processed_path):
+    """Load the processed entries CSV. Returns empty list if not found."""
+    if not os.path.exists(processed_path):
+        return []
+    try:
+        return load_csv_rows(processed_path)
+    except Exception:
+        return []
+
+def save_processed_csv(processed_path, rows):
+    """Write processed entries to CSV."""
+    if not rows:
+        return
+    with open(processed_path, 'w', newline='', encoding='utf-8-sig') as f:
+        if rows:
+            fieldnames = list(rows[0].keys())
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(rows)
+
+def row_matches_processed(input_row, processed_row):
+    """Check if input row and processed row are identical for all input columns."""
+    check_columns = ['Source', 'Filename', 'Youtube', 'Delay', 'Speed', 'Remove Black Bar']
+    for col in check_columns:
+        input_val = input_row.get(col, '').strip()
+        proc_val = processed_row.get(col, '').strip()
+        if input_val != proc_val:
+            return False
+    return True
 
 def open_csv_source_dialog(csv_folder):
     """Prompt for which CSV file and Source group to process."""
@@ -469,9 +499,13 @@ def open_csv_source_dialog(csv_folder):
 
     csv_var = tk.StringVar(value=csv_files[0])
     source_var = tk.StringVar(value='All')
+    ignore_save_var = tk.BooleanVar(value=False)
+    mark_processed_var = tk.BooleanVar(value=False)
     detail_var = tk.StringVar(value='')
     result = {}
     current_rows = []
+    processed_csv_path = os.path.join(csv_folder, 'backbeat_processed.csv')
+    processed_entries = load_processed_csv(processed_csv_path)
 
     csv_lbl = ttk.Label(frame, text='CSV file')
     csv_lbl.grid(row=0, column=0, sticky='w', pady=(0, 4))
@@ -509,8 +543,56 @@ def open_csv_source_dialog(csv_folder):
     _Tooltip(source_lbl, _SOURCE_TIP)
     _Tooltip(source_box, _SOURCE_TIP)
 
+    ignore_save_check = ttk.Checkbutton(frame, text='Ignore save file', variable=ignore_save_var)
+    ignore_save_check.grid(row=4, column=0, sticky='w', pady=(0, 6))
+    _IGNORE_SAVE_TIP = (
+        'If checked, process all rows regardless of prior encoding history.\n\n'
+        'Processed entries are still updated after encoding.'
+    )
+    _Tooltip(ignore_save_check, _IGNORE_SAVE_TIP)
+
+    mark_processed_check = ttk.Checkbutton(frame, text='Mark all as processed', variable=mark_processed_var)
+    mark_processed_check.grid(row=5, column=0, sticky='w', pady=(0, 6))
+    _MARK_PROCESSED_TIP = (
+        'If checked, add all selected rows to the processed cache without encoding.\n\n'
+        'Use this if you\'ve already encoded these videos and want to skip them.\n'
+        'If you don\'t know what this means, leave it OFF.'
+    )
+    _Tooltip(mark_processed_check, _MARK_PROCESSED_TIP)
+
     detail_lbl = ttk.Label(frame, textvariable=detail_var, foreground='gray')
-    detail_lbl.grid(row=4, column=0, sticky='w', pady=(0, 12))
+    detail_lbl.grid(row=6, column=0, sticky='w', pady=(0, 12))
+
+    def update_detail_display():
+        """Calculate and display how many songs will be processed."""
+        selected_source = source_var.get()
+        ignore_save = ignore_save_var.get()
+        
+        # Filter rows by source if needed
+        filtered_rows = current_rows
+        if selected_source != 'All':
+            selected_source_folded = selected_source.casefold()
+            filtered_rows = [
+                row for row in current_rows
+                if row.get('Source', '').strip().casefold() == selected_source_folded
+            ]
+        
+        # Count how many will actually be processed
+        to_process = 0
+        if ignore_save:
+            to_process = len(filtered_rows)
+        else:
+            for row in filtered_rows:
+                already_processed = False
+                for proc_entry in processed_entries:
+                    if row_matches_processed(row, proc_entry):
+                        already_processed = True
+                        break
+                if not already_processed:
+                    to_process += 1
+        
+        total = len(filtered_rows)
+        detail_var.set(f'{total} row(s) in source, {to_process} to process')
 
     def refresh_sources(_event=None):
         nonlocal current_rows
@@ -532,9 +614,7 @@ def open_csv_source_dialog(csv_folder):
         if source_var.get() not in options:
             source_var.set('All')
 
-        row_count = len(current_rows)
-        source_count = len(source_values)
-        detail_var.set(f'{row_count} row(s) loaded, {source_count} source value(s) found')
+        update_detail_display()
 
     def submit():
         csv_name = csv_var.get().strip()
@@ -544,6 +624,8 @@ def open_csv_source_dialog(csv_folder):
         result['csv_name'] = csv_name
         result['csv_path'] = os.path.join(csv_folder, csv_name)
         result['rows'] = current_rows
+        result['ignore_save_file'] = ignore_save_var.get()
+        result['mark_processed'] = mark_processed_var.get()
         root.destroy()
 
     def cancel():
@@ -551,7 +633,7 @@ def open_csv_source_dialog(csv_folder):
         root.destroy()
 
     button_frame = ttk.Frame(frame)
-    button_frame.grid(row=5, column=0, sticky='e')
+    button_frame.grid(row=7, column=0, sticky='e')
     ttk.Button(button_frame, text='Process', command=submit).grid(row=0, column=0, padx=(0, 8))
     ttk.Button(button_frame, text='Cancel', command=cancel).grid(row=0, column=1)
 
@@ -561,6 +643,8 @@ def open_csv_source_dialog(csv_folder):
     root.bind('<Return>', lambda _event: submit())
     root.bind('<Escape>', lambda _event: cancel())
     csv_box.bind('<<ComboboxSelected>>', refresh_sources)
+    source_var.trace_add('write', lambda *args: update_detail_display())
+    ignore_save_var.trace_add('write', lambda *args: update_detail_display())
     refresh_sources()
     csv_box.focus_set()
     root.mainloop()
@@ -849,12 +933,32 @@ def main():
     selected_csv = source_selection['csv_name']
     rows = source_selection['rows']
     selected_source = source_selection['source']
+    ignore_save_file = source_selection.get('ignore_save_file', False)
+    mark_processed = source_selection.get('mark_processed', False)
+    processed_csv_path = os.path.join(csv_folder, 'backbeat_processed.csv')
+    processed_entries = load_processed_csv(processed_csv_path)
     if selected_source != 'All':
         selected_source_folded = selected_source.casefold()
         rows = [
             row for row in rows
             if row.get('Source', '').strip().casefold() == selected_source_folded
         ]
+
+    # If mark_processed flag is set, add all rows to processed cache and exit
+    if mark_processed:
+        for row in rows:
+            # Only add if not already present
+            found = False
+            for proc_entry in processed_entries:
+                if row_matches_processed(row, proc_entry):
+                    found = True
+                    break
+            if not found:
+                processed_entries.append(row.copy())
+        save_processed_csv(processed_csv_path, processed_entries)
+        print(f'\033[1;92m✓ Added {len(rows)} row(s) to processed cache\033[0m')
+        input('Press Enter to close...')
+        sys.exit(0)
 
     total = len(rows)
     log(f'BackBeat — {total} videos to process')
@@ -892,6 +996,18 @@ def main():
         speed_pct   = float(speed_raw) if speed_raw  else 100.0
         remove_bars = bar_raw in ('TRUE', '1', 'YES')
 
+        # Check if already processed (unless ignore flag is set)
+        if not ignore_save_file:
+            already_processed = False
+            for proc_entry in processed_entries:
+                if row_matches_processed(row, proc_entry):
+                    log(f'[{i}/{total}] Skipping "{filename}" — already processed with identical parameters')
+                    results.append((filename, True, 'skipped (already processed)'))
+                    already_processed = True
+                    break
+            if already_processed:
+                continue
+
         log(f'[{i}/{total}] {filename}  |  delay={delay_ms}ms  speed={speed_pct}%  bars={remove_bars}')
 
         notes = []
@@ -909,6 +1025,22 @@ def main():
 
         ok = process_video(filename, url, delay_ms, speed_pct, remove_bars, output_dir=output_dir)
         results.append((filename, ok, ', '.join(notes) if notes else 'no adjustments'))
+
+        # Update processed CSV if encoding was successful
+        if ok:
+            # Check if this row already exists in processed_entries and update it
+            found = False
+            for proc_entry in processed_entries:
+                if row_matches_processed(row, proc_entry):
+                    # Already in the list with same params, no change needed
+                    found = True
+                    break
+            if not found:
+                # Add new entry to processed list
+                processed_entries.append(row.copy())
+
+    # Save processed entries CSV
+    save_processed_csv(processed_csv_path, processed_entries)
 
     # ── Final summary ─────────────────────────────────────────────────────────
     print('\n\033[1;96m' + '═' * 70 + '\033[0m')

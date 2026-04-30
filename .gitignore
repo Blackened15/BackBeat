@@ -22,6 +22,9 @@ bin/
 *.mp4
 *.webm
 
+# Processing cache (tracks encoded videos)
+backbeat_processed.csv
+
 # Ignore top-level output folders, but keep docs tracked
 /*/
 !/docs/
