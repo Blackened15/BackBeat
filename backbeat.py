@@ -476,12 +476,26 @@ def save_processed_csv(processed_path, rows):
 
 def row_matches_processed(input_row, processed_row):
     """Check if input row and processed row are identical for all input columns."""
-    check_columns = ['Source', 'Filename', 'Youtube', 'Delay', 'Speed', 'Remove Black Bar']
-    for col in check_columns:
-        input_val = input_row.get(col, '').strip()
-        proc_val = processed_row.get(col, '').strip()
-        if input_val != proc_val:
+    plain_columns = ['Source', 'Filename', 'Youtube', 'Remove Black Bar']
+    for col in plain_columns:
+        if input_row.get(col, '').strip() != processed_row.get(col, '').strip():
             return False
+
+    # Treat empty delay and '0' as equivalent
+    def norm_delay(val):
+        v = val.strip()
+        return '0' if v == '' else v
+
+    # Treat empty speed and '100' as equivalent
+    def norm_speed(val):
+        v = val.strip()
+        return '100' if v == '' else v
+
+    if norm_delay(input_row.get('Delay', '')) != norm_delay(processed_row.get('Delay', '')):
+        return False
+    if norm_speed(input_row.get('Speed', '')) != norm_speed(processed_row.get('Speed', '')):
+        return False
+
     return True
 
 def open_csv_source_dialog(csv_folder):
@@ -1019,9 +1033,8 @@ def main():
             notes.append('crop bars')
 
         output_dir = FOLDER
-        if selected_source == 'All':
-            source_folder_name = sanitize(source_name) if source_name else 'Unknown_Source'
-            output_dir = os.path.join(FOLDER, source_folder_name)
+        source_folder_name = sanitize(source_name) if source_name else 'Unknown_Source'
+        output_dir = os.path.join(FOLDER, source_folder_name)
 
         ok = process_video(filename, url, delay_ms, speed_pct, remove_bars, output_dir=output_dir)
         results.append((filename, ok, ', '.join(notes) if notes else 'no adjustments'))

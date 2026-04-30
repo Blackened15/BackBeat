@@ -145,9 +145,7 @@ When **Auto** is selected, profiles are chosen by source height:
 
 ## Output
 
-Encoded files are written beside the script, named after the `Filename` column in the selected CSV.
-
-When processing **All** sources at once, files are organized into subfolders by their `Source` value (e.g. `RB1/`, `RB2/`, `RB3/`). When processing a single source, files go directly beside the script.
+Encoded files are written beside the script in a subfolder named after the `Source` column value (e.g. `RB1/`, `RB2/`). If a row has no `Source` value, it goes into an `Unknown_Source/` folder.
 
 ---
 

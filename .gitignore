@@ -25,6 +25,10 @@ bin/
 # Processing cache (tracks encoded videos)
 backbeat_processed.csv
 
+# User CSV playlists (only the default backbeat.csv is tracked)
+*.csv
+!backbeat.csv
+
 # Ignore top-level output folders, but keep docs tracked
 /*/
 !/docs/
