@@ -4,6 +4,7 @@
 
 import subprocess, os, glob, sys, csv, re, shutil, tempfile, zipfile
 import urllib.request
+from urllib.parse import urlparse
 import tkinter as tk
 import tkinter.messagebox as _mb
 from tkinter import ttk
@@ -498,6 +499,17 @@ def row_matches_processed(input_row, processed_row):
 
     return True
 
+def has_valid_video_url(row):
+    """Return True when the row has a syntactically valid http/https URL."""
+    raw = row.get('Youtube', '').strip()
+    if not raw:
+        return False
+    try:
+        parsed = urlparse(raw)
+    except Exception:
+        return False
+    return parsed.scheme in ('http', 'https') and bool(parsed.netloc)
+
 def open_csv_source_dialog(csv_folder):
     """Prompt for which CSV file and Source group to process."""
     csv_files = list_csv_files(csv_folder)
@@ -590,6 +602,9 @@ def open_csv_source_dialog(csv_folder):
                 row for row in current_rows
                 if row.get('Source', '').strip().casefold() == selected_source_folded
             ]
+
+        # Ignore rows with missing/invalid URLs entirely.
+        filtered_rows = [row for row in filtered_rows if has_valid_video_url(row)]
         
         # Count how many will actually be processed
         to_process = 0
@@ -958,6 +973,9 @@ def main():
             if row.get('Source', '').strip().casefold() == selected_source_folded
         ]
 
+    # Ignore rows with missing/invalid URLs so they do not count or process.
+    rows = [row for row in rows if has_valid_video_url(row)]
+
     # If mark_processed flag is set, add all rows to processed cache and exit
     if mark_processed:
         for row in rows:
@@ -999,11 +1017,6 @@ def main():
         if not filename:
             log(f'[{i}/{total}] Skipping row — no filename')
             results.append(('<missing filename>', False, 'no filename'))
-            continue
-
-        if not url:
-            log(f'[{i}/{total}] Skipping "{filename}" — no URL')
-            results.append((filename, False, 'no URL'))
             continue
 
         delay_ms    = int(delay_raw)   if delay_raw  else 0

@@ -1,158 +1,290 @@
-﻿Source,Filename,Youtube,Delay,Speed,Remove Black Bar
-RB1,Bang Camaro - Pleasure (Pleasure),https://www.youtube.com/watch?v=XhWK64pNEK8,-2801,,FALSE
-RB1,Beastie Boys - Sabotage,https://www.youtube.com/watch?v=z5rRZdiu1UE,-4542,,FALSE
-RB1,Black Sabbath - Paranoid,https://www.youtube.com/watch?v=0qanF-91aJo,2133,,FALSE
-RB1,Bon Jovi - Wanted Dead or Alive,https://www.youtube.com/watch?v=SRvCvsRp5ho,-15000,,FALSE
-RB1,Coheed and Cambria - Welcome Home,https://www.youtube.com/watch?v=n0H3RlaQVrM,-30100,,FALSE
-RB1,Deep Purple - Highway Star,https://www.youtube.com/watch?v=UAKCR7kQMTQ,-1760,96.4,FALSE
-RB1,Faith No More - Epic,https://www.youtube.com/watch?v=ZG_k5CSYKhg,-3440,99.5,FALSE
-RB1,Fall Out Boy - Dead on Arrival,https://www.youtube.com/watch?v=qL02p9KhABo,-2334,,FALSE
-RB1,Flyleaf - I'm So Sick,https://www.youtube.com/watch?v=iWIADZKU9dw,-6000,,FALSE
-RB1,Foo Fighters - Learn to Fly,https://www.youtube.com/watch?v=1VQ_3sBZEm0,27292,,FALSE
-RB1,Freezepop - Brainpower,https://www.youtube.com/watch?v=r2zGcAbXi5g,27834,,FALSE
-RB1,Garbage - I Think I'm Paranoid,https://www.youtube.com/watch?v=ypr18UmxOas,-4133,,FALSE
-RB1,Hole - Celebrity Skin,https://www.youtube.com/watch?v=O3dWBLoU--E,-209,,FALSE
-RB1,Iron Maiden - Run to the Hills,https://www.youtube.com/watch?v=86URGgqONvA,-5600,99.8,FALSE
-RB1,Jet - Are You Gonna Be My Girl,https://www.youtube.com/watch?v=tuK6n2Lkza0,-4250,,FALSE
-RB1,KISS - Detroit Rock City,https://www.youtube.com/watch?v=RSL3dwfEx3I,-1868,99,FALSE
-RB1,Metallica - Enter Sandman,https://www.youtube.com/watch?v=CD-E-LDc384,-1167,,FALSE
-RB1,Nine Inch Nails - The Hand That Feeds,https://www.youtube.com/watch?v=xwhBRJStz7w,534,,FALSE
-RB1,Nirvana - In Bloom,https://www.youtube.com/watch?v=PbgKEjNBHqM,16600,99.7,FALSE
-RB1,OK Go - Here It Goes Again,https://www.youtube.com/watch?v=dTAAsCNK7RA,4375,,FALSE
-RB1,Queens of the Stone Age - Go with the Flow,https://www.youtube.com/watch?v=DcHKOC64KnE,4767,,FALSE
-RB1,R.E.M - Orange Crush,https://www.youtube.com/watch?v=_mSmOcmk7uQ,-3751,,FALSE
-RB1,Radiohead - Creep,https://www.youtube.com/watch?v=XFkzRNyygfk,-5080,,FALSE
-RB1,Ramones - Blitzkrieg Bop,https://www.youtube.com/watch?v=QAN7D1V0vuI,-2200,,FALSE
-RB1,Red Hot Chili Peppers - Dani California,https://www.youtube.com/watch?v=Sb5aq5HcS1A,-3876,,FALSE
-RB1,Rush - Tom Sawyer,https://www.youtube.com/watch?v=auLBLk4ibAk,-2701,100.1,FALSE
-RB1,Smashing Pumpkins - Cherub Rock,https://www.youtube.com/watch?v=q-KE9lvU810,-5042,,FALSE
-RB1,Soundgarden - Black Hole Sun,https://www.youtube.com/watch?v=3mbBbFH9fAg,-3434,,FALSE
-RB1,Stone Temple Pilots - Vasoline,https://www.youtube.com/watch?v=ht672-wYelc,2042,,FALSE
-RB1,Sweet - Ballroom Blitz,https://www.youtube.com/watch?v=7lTwA5xMeTM,-1459,,FALSE
-RB1,The Clash - Should I Stay or Should I Go,https://www.youtube.com/watch?v=xMaE6toi4mk,-3584,99.8,FALSE
-RB1,The Hives - Main Offender,https://www.youtube.com/watch?v=C_Ue3PVB4tw,-2533,99.7,FALSE
-RB1,The Killers - When You Were Young,https://www.youtube.com/watch?v=ff0oWESdmH0,85209,99.845,FALSE
-RB1,The Strokes - Reptilia,https://www.youtube.com/watch?v=b8-tXG8KrWs,-1209,,FALSE
-RB1,Timmy & the Lords of the Underworld - Timmy & the Lords of the Underworld,https://www.youtube.com/watch?v=Uw2UZwOcUxI,,,FALSE
-RB1,Weezer - Say It Ain't So,https://www.youtube.com/watch?v=ENXvZ9YRjbo,-4834,100.3,FALSE
-RB1,Yeah Yeah Yeahs - Maps,https://www.youtube.com/watch?v=oIIxlgcuQRU,34542,,FALSE
-RB2,ACDC - Let There Be Rock,https://www.youtube.com/watch?v=3f2g4RMfhS0,-3968,,FALSE
-RB2,AFI - Girl's Not Grey,https://www.youtube.com/watch?v=1Yzu-4kJg6g,-3040,,FALSE
-RB2,Alanis Morissette - You Oughta Know,https://www.youtube.com/watch?v=NPcyTyilmYY,-3000,100.15,FALSE
-RB2,Alice In Chains - Man in the Box,https://www.youtube.com/watch?v=TAqZb52sgpU,-459,,FALSE
-RB2,Avenged Sevenfold - Almost Easy,https://www.youtube.com/watch?v=Fi_GN1pHCVc,-1042,,TRUE
-RB2,Bang Camaro - Night Lies,https://www.youtube.com/watch?v=M_t6crVBi5M,4042,103,TRUE
-RB2,Beastie Boys - So What'cha Want,https://www.youtube.com/watch?v=ru3gH27Fn6E,1167,100.15,FALSE
-RB2,Beck - E-Pro,https://www.youtube.com/watch?v=RIrG6xBW5Wk,-14567,,FALSE
-RB2,Billy Idol - White Wedding (Part 1),https://www.youtube.com/watch?v=AAZQaYKZMTI,-1440,100.557,FALSE
-RB2,Bon Jovi - Livin' On a Prayer,https://www.youtube.com/watch?v=lDK9QqIzhwk,-267,,FALSE
-RB2,Cheap Trick - Hello There,https://www.youtube.com/watch?v=8MJpxN4l00M,18457,,FALSE
-RB2,Disturbed - Down with the Sickness,https://www.youtube.com/watch?v=09LTT0xwdfw,-14934,,FALSE
-RB2,Duran Duran - Hungry Like the Wolf,https://www.youtube.com/watch?v=oJL-lCzEXgI,360,100.3,FALSE
-RB2,Elvis Costello - Pump It Up,https://www.youtube.com/watch?v=3Y71iDvCYXA,-1960,,FALSE
-RB2,Foo Fighters - Everlong,https://www.youtube.com/watch?v=eBG7P-K-r1Y,-2083,,FALSE
-RB2,Jane's Addiction - Mountain Song,https://www.youtube.com/watch?v=1kAIMlISHhU,-3000,,FALSE
-RB2,Jethro Tull - Aqualung,https://www.youtube.com/watch?v=N4zPu3ISCGs,1080,,FALSE
-RB2,Jimmy Eat World - The Middle,https://www.youtube.com/watch?v=oKsxPW6i3pM,-1167,99.9,FALSE
-RB2,Joan Jett - Bad Reputation,https://www.youtube.com/watch?v=nO6YL09T8Fw,-267,102.1,FALSE
-RB2,Journey - Any Way You Want It,https://www.youtube.com/watch?v=atxUuldUcfI,35500,99.5,FALSE
-RB2,Judas Priest - Painkiller,https://www.youtube.com/watch?v=nM__lPTWThU,-3801,100.2,FALSE
-RB2,Kansas - Carry On Wayward Son,https://www.youtube.com/watch?v=P5ZJui3aPoQ,-3901,,FALSE
-RB2,L7 - Pretend We're Dead,https://www.youtube.com/watch?v=NAdlZ2F-fs8,-1759,,FALSE
-RB2,Lacuna Coil - Our Truth,https://www.youtube.com/watch?v=SB9LXpO6yWo,7067,,TRUE
-RB2,Linkin Park - One Step Closer,https://www.youtube.com/watch?v=4qlCC1GOwFw,13042,,FALSE
-RB2,Lit - My Own Worst Enemy,https://www.youtube.com/watch?v=sc5iTNVEOAg,8834,,FALSE
-RB2,Lush - De-Luxe,https://www.youtube.com/watch?v=aKrw5wOlSng,-1960,,FALSE
-RB2,Mastodon - Colony of Birchmen,https://www.youtube.com/watch?v=VQo9bwQ2rQc,-3125,,TRUE
-RB2,Megadeth - Peace Sells,https://www.youtube.com/watch?v=rdEupVsL07E,3360,100.3,FALSE
-RB2,Modest Mouse - Float On,https://www.youtube.com/watch?v=CTAud5O7Qqk,1167,,FALSE
-RB2,Motörhead - Ace of Spades '08,https://www.youtube.com/watch?v=7Ovq-I9wpK0,-3333,,FALSE
-RB2,Norman Greenbaum - Spirit in the Sky,https://www.youtube.com/watch?v=YqYN-1vMM9k,10167,,FALSE
-RB2,Panic at the Disco - Nine in the Afternoon,https://www.youtube.com/watch?v=yCto3PCn8wo,2876,,FALSE
-RB2,Paramore - That's What You Get,https://www.youtube.com/watch?v=1kz6hNDlEEg,-2709,,FALSE
-RB2,Rage Against the Machine - Testify,https://www.youtube.com/watch?v=Q3dvbM6Pias,-3701,,FALSE
-RB2,Ratt - Round and Round,https://www.youtube.com/watch?v=0u8teXR8VE4,-2167,99.75,FALSE
-RB2,Red Hot Chili Peppers - Give It Away,https://www.youtube.com/watch?v=Mr_uHJPUlO8,467,,FALSE
-RB2,Rise Against - Give It All,https://www.youtube.com/watch?v=dhldbymXK-8,-3876,,FALSE
-RB2,Silversun Pickups - Lazy Eye,https://www.youtube.com/watch?v=j1DsAXoU-Yw,-2800,,TRUE
-RB2,Smashing Pumpkins - Today,https://www.youtube.com/watch?v=xmUZ6nCFNoU,18542,99.55,FALSE
-RB2,Social Distortion - I Was Wrong,https://www.youtube.com/watch?v=aXAU4MmMIMo,-1734,,FALSE
-RB2,Sonic Youth - Teen Age Riot,https://www.youtube.com/watch?v=tPytYrYqDbA,-85267,,FALSE
-RB2,Soundgarden - Spoonman,https://www.youtube.com/watch?v=T0_zzCLLRvE,10917,99.8,FALSE
-RB2,Squeeze - Cool for Cats,https://www.youtube.com/watch?v=uJ2cEc_TCH8,-2960,,FALSE
-RB2,Survivor - Eye of the Tiger,https://www.youtube.com/watch?v=btPJPFnesV4,-3709,,FALSE
-RB2,System of a Down - Chop Suey,https://www.youtube.com/watch?v=CSvFpBOe8eY,-3584,,FALSE
-RB2,Talking Heads - Psycho Killer,https://www.youtube.com/watch?v=CJ54eImz88w,-2584,100.2,FALSE
-RB2,Tenacious D - Master Exploder,https://www.youtube.com/watch?v=80DtQD5BQ_A,42300,,TRUE
-RB2,Testament - Souls of Black,https://www.youtube.com/watch?v=8YT8XX-640w,-8480,96.95,FALSE
-RB2,That Handsome Devil - Rob the Prez-O-Dent,https://www.youtube.com/watch?v=ZjHhwRI6TnE,9959,,FALSE
-RB2,The Main Drag - A Jagged Gorgeous Winter,https://www.youtube.com/watch?v=yuG_jxi37RM,-2567,,FALSE
-RB2,The Mighty Mighty Bosstones - Where'd You Go,https://www.youtube.com/watch?v=TjPB3jROgco,8840,103.23,FALSE
-RB2,The Offspring - Come Out and Play (Keep 'Em Separated),https://www.youtube.com/watch?v=1jOk8dk-qaU,-1934,,FALSE
-RB2,The Presidents of the United States of America - Lump,https://www.youtube.com/watch?v=xjwkXYB4nHs,-3067,100.2,FALSE
-RB2,The Replacements - Alex Chilton,https://www.youtube.com/watch?v=ftTOEJfzdq0,-4133,,FALSE
-RB3,Amy Winehouse - Rehab,https://www.youtube.com/watch?v=KUmZp8pR1uc,-560,,FALSE
-RB3,At the Drive-In - One Armed Scissor,https://www.youtube.com/watch?v=QpELGD0vFrA,-2000,99.9,FALSE
-RB3,Avenged Sevenfold - Beast and the Harlot,https://www.youtube.com/watch?v=7bDg7n-chhU,-32625,,TRUE
-RB3,Big Country - In a Big Country,https://www.youtube.com/watch?v=657TZDHZqj4,-22440,99,TRUE
-RB3,Blondie - Heart of Glass,https://www.youtube.com/watch?v=WGU_4-5RaxU,4560,100.1,FALSE
-RB3,David Bowie - Space Oddity,https://www.youtube.com/watch?v=iYYRH4apXDo,-2480,,FALSE
-RB3,Deep Purple - Smoke on the Water,https://www.youtube.com/watch?v=Q2FzZSBD5LE,2375,,FALSE
-RB3,Def Leppard - Foolin',https://www.youtube.com/watch?v=9SnxBvH-0Mc,-800,,FALSE
-RB3,Dio - Rainbow in the Dark,https://www.youtube.com/watch?v=PrBUjXaRSUQ,-2167,100.4,FALSE
-RB3,Dire Straits - Walk of Life,https://www.youtube.com/watch?v=kd9TlGDZGkI,-3876,,FALSE
-RB3,Dover - King George,https://www.youtube.com/watch?v=wbM9RtOGdKE,-3960,,TRUE
-RB3,Echo & The Bunnymen - The Killing Moon,https://www.youtube.com/watch?v=LWz0JC7afNQ,8720,99.4,FALSE
-RB3,Faith No More - MidLife Crisis,https://www.youtube.com/watch?v=U8b88US-6ts,-11375,99,FALSE
-RB3,Filter - Hey Man Nice Shot,https://www.youtube.com/watch?v=o9mJ82x_l-E,-15709,100.15,FALSE
-RB3,Foreigner - Cold as Ice,https://www.youtube.com/watch?v=ySb1f9zWJkQ,-2200,100.43,FALSE
-RB3,Golden Earring - Radar Love,https://www.youtube.com/watch?v=aRlSHG5hRY4,-4080,,FALSE
-RB3,H.I.M - Killing Loneliness,https://www.youtube.com/watch?v=CQ9JdDAbKH0,-10042,,FALSE
-RB3,Huey Lewis and the News - The Power of Love,https://www.youtube.com/watch?v=wBl2QGAIx1s,130542,100.78,FALSE
-RB3,Ida Maria - Oh My God,https://www.youtube.com/watch?v=eED30qLA0KY,-2667,,FALSE
-RB3,INXS - Need You Tonight,https://www.youtube.com/watch?v=F93ywiGMDnQ,4560,100.174,FALSE
-RB3,Jane's Addiction - Been Caught Stealing,https://www.youtube.com/watch?v=jrwjiO1MCVs,7501,100.108,FALSE
-RB3,Joan Jett & The Blackhearts - I Love Rock N' Roll,https://www.youtube.com/watch?v=wMsazR6Tnf8,24367,99.379,FALSE
-RB3,John Lennon - Imagine,https://www.youtube.com/watch?v=Ts0XSyWpMnU,34680,,FALSE
-RB3,Juanes - Me Enamora,https://www.youtube.com/watch?v=voxgN3Dhjuo,375,,FALSE
-RB3,Lynyrd Skynyrd - Free Bird,https://www.youtube.com/watch?v=MQNRKX8GwPo,-8417,99.85,FALSE
-RB3,Maná - Oye Mi Amor,https://www.youtube.com/watch?v=h0p8yTqj8i4,12876,,FALSE
-RB3,Marilyn Manson - The Beautiful People,https://www.youtube.com/watch?v=Ypkv0HeUvTc,3917,,FALSE
-RB3,Metric - Combat Baby,https://www.youtube.com/watch?v=6rMfPvv3BMs,-2200,99.875,FALSE
-RB3,Night Ranger - Sister Christian,https://www.youtube.com/watch?v=z92bmlcmyq0,1209,98.8,FALSE
-RB3,Ozzy Osbourne - Crazy Train,https://www.youtube.com/watch?v=FVovq9TGBw0,7868,98.15,FALSE
-RB3,Paramore - Misery Business,https://www.youtube.com/watch?v=aCyGvGEtOwc,-4542,,FALSE
-RB3,Poni Hoax - Antibodies,https://www.youtube.com/watch?v=E0BOBnIbU_Q,1240,,FALSE
-RB3,Primus - Jerry Was a Race Car Driver,https://www.youtube.com/watch?v=LBQ2305fLeA,27792,,FALSE
-RB3,Queen - Bohemian Rhapsody,https://www.youtube.com/watch?v=fJ9rUzIMcZQ,-4760,100.864,FALSE
-RB3,Queens of the Stone Age - No One Knows,https://www.youtube.com/watch?v=s88r_q7oufE,-3250,99.9,FALSE
-RB3,Rammstein - Du Hast,https://www.youtube.com/watch?v=W3q8Od5qJio,-3800,,TRUE
-RB3,Ramones - I Wanna Be Sedated,https://www.youtube.com/watch?v=bm51ihfi1p4,-2934,,FALSE
-RB3,Rilo Kiley - Portions for Foxes,https://www.youtube.com/watch?v=Gw0YeT0nJ3A,-16292,,TRUE
-RB3,Riverboat Gamblers - Don't Bury Me... I'm Still Not Dead,https://www.youtube.com/watch?v=NY4ADPAt1rI,18083,,TRUE
-RB3,Roxette - The Look,https://www.youtube.com/watch?v=eAByAzEkI1c,-4667,100.115,FALSE
-RB3,Slipknot - Before I Forget,https://www.youtube.com/watch?v=qw2LU1yS7aw,-13917,,FALSE
-RB3,Smash Mouth - Walking on the Sun,https://www.youtube.com/watch?v=LQj--Kjn0z8,-2334,99.838,FALSE
-RB3,Spacehog - In the Meantime,https://www.youtube.com/watch?v=PCsGRCf8T9Y,-5209,100.1,FALSE
-RB3,Stone Temple Pilots - Plush,https://www.youtube.com/watch?v=V5UOC0C0x8Q,-15467,,FALSE
-RB3,T. Rex - 20th Century Boy,https://www.youtube.com/watch?v=c7nbXljpnq0,-880,100.366,FALSE
-RB3,Tears for Fears - Everybody Wants to Rule the World,https://www.youtube.com/watch?v=aGCdLKXNF3w,30520,101.778,FALSE
-RB3,Tegan and Sara - The Con,https://www.youtube.com/watch?v=IK7THPiRw8Q,-2501,,TRUE
-RB3,The B-52's - Rock Lobster,https://www.youtube.com/watch?v=Oh5J33KAaqw,-4600,99.5,FALSE
-RB3,The Beach Boys - Good Vibrations (Live),https://www.youtube.com/watch?v=apBWI6xrbLY,-4167,,FALSE
-RB3,The Cure - Just Like Heaven,https://www.youtube.com/watch?v=n3nPiBai66M,-3640,,FALSE
-RB3,The Doors - Break on Through (To the Other Side),https://www.youtube.com/watch?v=gdnzBNMfZfo,-1968,99.493,FALSE
-RB3,The Flaming Lips - Yoshimi Battles the Pink Robots Pt. 1,https://www.youtube.com/watch?v=ZdDHi5SSIlM,-13000,,FALSE
-RB3,The J. Geils Band - Centerfold,https://www.youtube.com/watch?v=BqDjMZKf-wg,-1584,99.91,FALSE
-RB3,The Police - Don't Stand So Close to Me,https://www.youtube.com/watch?v=KNIZofPB8ZM,11292,101.338,FALSE
-RB3,The Raveonettes - Last Dance,https://www.youtube.com/watch?v=9TL2B-iiVhA,-3500,98.846,FALSE
-RB3,The Smiths - Stop Me if You Think You've Heard This One Before,https://www.youtube.com/watch?v=SckD99B51IA,-3400,,FALSE
-RB3,The Sounds - Living in America,https://www.youtube.com/watch?v=DVarhSlAYwI,-3933,,FALSE
-RB3,The Vines - Get Free,https://www.youtube.com/watch?v=asOvnGHwtDU,-3320,,FALSE
-RB3,The White Stripes - The Hardest Button to Button,https://www.youtube.com/watch?v=K4dx42YzQCE,-800,,FALSE
-RB3,The Who - I Can See for Miles,https://www.youtube.com/watch?v=DdCySh8lW2E,-5000,98.4,FALSE
-RB3,Tom Petty and the Heartbreakers - I Need to Know,https://www.youtube.com/watch?v=qdMwneWwzEs,1133,97.396,FALSE
-RB3,WAR - Low Rider,https://www.youtube.com/watch?v=BsrqKE1iqqo,24042,100.8,FALSE
-RB3,Warren Zevon - Werewolves of London,https://www.youtube.com/watch?v=qae25976UgA,-3667,100.199,FALSE
-RB3,Whitesnake - Here I Go Again,https://www.youtube.com/watch?v=WyF8RHM1OCg,-4600,99.9,FALSE
-DLC1,System of a Down - B.Y.O.B,https://www.youtube.com/watch?v=zUzd9KyIDrM,33,100.207,FALSE
+﻿Source,Filename,Youtube,Delay,Speed,Remove Black Bar,Notes
+RB1,Aerosmith - Train Kept A Rollin',Not Found,,,FALSE,
+RB1,Anarchy Club - Blood Doll,Not Found,,,FALSE,
+RB1,Bang Camaro - Pleasure (Pleasure),https://www.youtube.com/watch?v=XhWK64pNEK8,-2801,,FALSE,
+RB1,Beastie Boys - Sabotage,https://www.youtube.com/watch?v=z5rRZdiu1UE,-4542,,FALSE,
+RB1,Black Sabbath - Paranoid,https://www.youtube.com/watch?v=0qanF-91aJo,2133,,FALSE,Wavegroup song
+RB1,Blue Öyster Cult - (Don't Fear) The Reaper,Not Found,,,FALSE,
+RB1,Bon Jovi - Wanted Dead or Alive,https://www.youtube.com/watch?v=SRvCvsRp5ho,-15000,,FALSE,"Edited down Video Version, timing works fine"
+RB1,Boston - Foreplay-Long Time,Not Found,,,FALSE,
+RB1,Coheed and Cambria - Welcome Home,https://www.youtube.com/watch?v=n0H3RlaQVrM,-30100,,FALSE,Need Recut
+RB1,Crooked X - Nightmare,Not Found,,,FALSE,
+RB1,David Bowie - Suffragette City,Not Found,,,FALSE,
+RB1,Death of the Cool - Can't Let Go,Not Found,,,FALSE,
+RB1,Deep Purple - Highway Star,https://www.youtube.com/watch?v=UAKCR7kQMTQ,-1760,96.4,FALSE,Non Official Video
+RB1,Faith No More - Epic,https://www.youtube.com/watch?v=ZG_k5CSYKhg,-3440,99.5,FALSE,
+RB1,Fall Out Boy - Dead on Arrival,https://www.youtube.com/watch?v=qL02p9KhABo,-2334,,FALSE,
+RB1,Flyleaf - I'm So Sick,https://www.youtube.com/watch?v=iWIADZKU9dw,-6000,,FALSE,
+RB1,Foo Fighters - Learn to Fly,https://www.youtube.com/watch?v=1VQ_3sBZEm0,27292,,FALSE,
+RB1,Freezepop - Brainpower,https://www.youtube.com/watch?v=r2zGcAbXi5g,27834,,FALSE,
+RB1,Garbage - I Think I'm Paranoid,https://www.youtube.com/watch?v=ypr18UmxOas,-4133,,FALSE,
+RB1,Hole - Celebrity Skin,https://www.youtube.com/watch?v=O3dWBLoU--E,-209,,FALSE,
+RB1,Honest Bob and the Factory-to-Dealer Incentives - I Get By,Not Found,,,FALSE,
+RB1,Iron Maiden - Run to the Hills,https://www.youtube.com/watch?v=86URGgqONvA,-5600,99.8,FALSE,Wavegroup song
+RB1,Jet - Are You Gonna Be My Girl,https://www.youtube.com/watch?v=tuK6n2Lkza0,-4250,,FALSE,
+RB1,KISS - Detroit Rock City,https://www.youtube.com/watch?v=RSL3dwfEx3I,-1868,99,FALSE,
+RB1,Metallica - Enter Sandman,https://www.youtube.com/watch?v=CD-E-LDc384,-1167,,FALSE,"Lots of flashing light, beware"
+RB1,Molly Hatchet - Flirtin' with Disaster,Not Found,,,FALSE,
+RB1,Mountain - Mississippi Queen,Not Found,,,FALSE,
+RB1,Nine Inch Nails - The Hand That Feeds,https://www.youtube.com/watch?v=xwhBRJStz7w,534,,FALSE,
+RB1,Nirvana - In Bloom,https://www.youtube.com/watch?v=PbgKEjNBHqM,16600,99.7,FALSE,0.997
+RB1,OK Go - Here It Goes Again,https://www.youtube.com/watch?v=dTAAsCNK7RA,4375,,FALSE,
+RB1,Pixies - Wave of Mutilation,Not Found,,,FALSE,
+RB1,Queens of the Stone Age - Go with the Flow,https://www.youtube.com/watch?v=DcHKOC64KnE,4767,,FALSE,
+RB1,R.E.M - Orange Crush,https://www.youtube.com/watch?v=_mSmOcmk7uQ,-3751,,FALSE,"Not exactly the same, but no lipsync or instruments to match, so doesn’t matter"
+RB1,Radiohead - Creep,https://www.youtube.com/watch?v=XFkzRNyygfk,-5080,,FALSE,
+RB1,Ramones - Blitzkrieg Bop,https://www.youtube.com/watch?v=QAN7D1V0vuI,-2200,,FALSE,
+RB1,Red Hot Chili Peppers - Dani California,https://www.youtube.com/watch?v=Sb5aq5HcS1A,-3876,,FALSE,
+RB1,Rush - Tom Sawyer,https://www.youtube.com/watch?v=auLBLk4ibAk,-2701,100.1,FALSE,Wavegroup song
+RB1,Smashing Pumpkins - Cherub Rock,https://www.youtube.com/watch?v=q-KE9lvU810,-5042,,FALSE,
+RB1,Soundgarden - Black Hole Sun,https://www.youtube.com/watch?v=3mbBbFH9fAg,-3434,,FALSE,
+RB1,Stone Temple Pilots - Vasoline,https://www.youtube.com/watch?v=ht672-wYelc,2042,,FALSE,
+RB1,Sweet - Ballroom Blitz,https://www.youtube.com/watch?v=7lTwA5xMeTM,-1459,,FALSE,Wavegroup song @ 101.4%
+RB1,"The Acro-brats - Day Late, Dollar Short",Not Found,,,FALSE,
+RB1,The Clash - Should I Stay or Should I Go,https://www.youtube.com/watch?v=xMaE6toi4mk,-3584,99.8,FALSE,
+RB1,The Hives - Main Offender,https://www.youtube.com/watch?v=C_Ue3PVB4tw,-2533,99.7,FALSE,0.997
+RB1,The Killers - When You Were Young,https://www.youtube.com/watch?v=ff0oWESdmH0,85209,99.845,FALSE,Story at the beginning
+RB1,The Konks - 29 Fingers,Not Found,,,FALSE,
+RB1,The Mother Hips - Time We Had,Not Found,,,FALSE,
+RB1,The New Pornographers - Electric Version,Not Found,,,FALSE,
+RB1,The Outlaws - Green Grass and High Tides,Not Found,,,FALSE,
+RB1,The Police - Next to You,Not Found,,,FALSE,
+RB1,The Rolling Stones - Gimme Shelter,Not Found,,,FALSE,
+RB1,The Strokes - Reptilia,https://www.youtube.com/watch?v=b8-tXG8KrWs,-1209,,FALSE,
+RB1,The Who - Won't Get Fooled Again,Not Found,,,FALSE,
+RB1,Timmy & the Lords of the Underworld - Timmy & the Lords of the Underworld,https://www.youtube.com/watch?v=Uw2UZwOcUxI,,,FALSE,"Not timed, just the show's performance, might do a clip myself"
+RB1,Tribe - Outside,Not Found,,,FALSE,
+RB1,VAGIANT - Seven,Not Found,,,FALSE,
+RB1,Weezer - Say It Ain't So,https://www.youtube.com/watch?v=ENXvZ9YRjbo,-4834,100.3,FALSE,
+RB1,Yeah Yeah Yeahs - Maps,https://www.youtube.com/watch?v=oIIxlgcuQRU,34542,,FALSE,
+RB2,Abnormality - Visions,Not Found,,,FALSE,
+RB2,ACDC - Let There Be Rock,https://www.youtube.com/watch?v=3f2g4RMfhS0,-3968,,FALSE,
+RB2,AFI - Girl's Not Grey,https://www.youtube.com/watch?v=1Yzu-4kJg6g,-3040,,FALSE,
+RB2,Alanis Morissette - You Oughta Know,https://www.youtube.com/watch?v=NPcyTyilmYY,-3000,100.15,FALSE,
+RB2,Alice In Chains - Man in the Box,https://www.youtube.com/watch?v=TAqZb52sgpU,-459,,FALSE,"Shorter Edit, could use a manual cut, its like a Bar or 2 that got cut"
+RB2,Anarchy Club - Get Clean,Not Found,,,FALSE,
+RB2,Avenged Sevenfold - Almost Easy,https://www.youtube.com/watch?v=Fi_GN1pHCVc,-1042,,TRUE,Video Already boxed
+RB2,Bad Company - Shooting Star,Not Found,,,FALSE,
+RB2,Bang Camaro - Night Lies,https://www.youtube.com/watch?v=M_t6crVBi5M,4042,103,TRUE,
+RB2,Beastie Boys - So What'cha Want,https://www.youtube.com/watch?v=ru3gH27Fn6E,1167,100.15,FALSE,
+RB2,Beck - E-Pro,https://www.youtube.com/watch?v=RIrG6xBW5Wk,-14567,,FALSE,
+RB2,Bikini Kill - Rebel Girl,Not Found,,,FALSE,
+RB2,Billy Idol - White Wedding (Part 1),https://www.youtube.com/watch?v=AAZQaYKZMTI,-1440,100.557,FALSE,"Short Edit, Sync lost at around 2:30"
+RB2,Blondie - One Way or Another,Not Found,,,FALSE,
+RB2,Bob Dylan - Tangled Up in Blue,Not Found,,,FALSE,
+RB2,Bon Jovi - Livin' On a Prayer,https://www.youtube.com/watch?v=lDK9QqIzhwk,-267,,FALSE,
+RB2,Breaking Wheel - Shoulder to the Plow,Not Found,,,FALSE,
+RB2,Cheap Trick - Hello There,https://www.youtube.com/watch?v=8MJpxN4l00M,18457,,FALSE,Rock Band 2 Intro vid
+RB2,Devo - Uncontrollable Urge,Not Found,,,FALSE,
+RB2,Dinosaur Jr - Feel the Pain,Not Found,,,FALSE,
+RB2,Disturbed - Down with the Sickness,https://www.youtube.com/watch?v=09LTT0xwdfw,-14934,,FALSE,"Shorter Edit without the break down, needs a manual edit"
+RB2,Dream Theater - Panic Attack,Not Found,,,FALSE,
+RB2,Duran Duran - Hungry Like the Wolf,https://www.youtube.com/watch?v=oJL-lCzEXgI,360,100.3,FALSE,"Longer Edit losing sync toward the end, could use a manual cut"
+RB2,Elvis Costello - Pump It Up,https://www.youtube.com/watch?v=3Y71iDvCYXA,-1960,,FALSE,
+RB2,Fleetwood Mac - Go Your Own Way,Not Found,,,FALSE,
+RB2,Foo Fighters - Everlong,https://www.youtube.com/watch?v=eBG7P-K-r1Y,-2083,,FALSE,
+RB2,Go-Go's - We Got the Beat,Not Found,,,FALSE,
+RB2,Guns N' Roses - Shackler's Revenge,Not Found,,,FALSE,
+RB2,Interpol - PDA,Not Found,,,FALSE,
+RB2,Jane's Addiction - Mountain Song,https://www.youtube.com/watch?v=1kAIMlISHhU,-3000,,FALSE,
+RB2,Jethro Tull - Aqualung,https://www.youtube.com/watch?v=N4zPu3ISCGs,1080,,FALSE,Sync not really needed
+RB2,Jimmy Eat World - The Middle,https://www.youtube.com/watch?v=oKsxPW6i3pM,-1167,99.9,FALSE,
+RB2,Joan Jett - Bad Reputation,https://www.youtube.com/watch?v=nO6YL09T8Fw,-267,102.1,FALSE,
+RB2,Journey - Any Way You Want It,https://www.youtube.com/watch?v=atxUuldUcfI,35500,99.5,FALSE,
+RB2,Judas Priest - Painkiller,https://www.youtube.com/watch?v=nM__lPTWThU,-3801,100.2,FALSE,
+RB2,Kansas - Carry On Wayward Son,https://www.youtube.com/watch?v=P5ZJui3aPoQ,-3901,,FALSE,
+RB2,L7 - Pretend We're Dead,https://www.youtube.com/watch?v=NAdlZ2F-fs8,-1759,,FALSE,Sync goes off  near the end
+RB2,Lacuna Coil - Our Truth,https://www.youtube.com/watch?v=SB9LXpO6yWo,7067,,TRUE,
+RB2,Libyans - Welcome to the Neighborhood,Not Found,,,FALSE,
+RB2,Linkin Park - One Step Closer,https://www.youtube.com/watch?v=4qlCC1GOwFw,13042,,FALSE,
+RB2,Lit - My Own Worst Enemy,https://www.youtube.com/watch?v=sc5iTNVEOAg,8834,,FALSE,
+RB2,Lush - De-Luxe,https://www.youtube.com/watch?v=aKrw5wOlSng,-1960,,FALSE,
+RB2,Mastodon - Colony of Birchmen,https://www.youtube.com/watch?v=VQo9bwQ2rQc,-3125,,TRUE,black bars
+RB2,Megadeth - Peace Sells,https://www.youtube.com/watch?v=rdEupVsL07E,3360,100.3,FALSE,"Added cut in the middle throwing sync off, should cut"
+RB2,Metallica - Battery,Not Found,,,FALSE,
+RB2,Modest Mouse - Float On,https://www.youtube.com/watch?v=CTAud5O7Qqk,1167,,FALSE,
+RB2,Motörhead - Ace of Spades '08,https://www.youtube.com/watch?v=7Ovq-I9wpK0,-3333,,FALSE,60 fps video
+RB2,Nirvana - Drain You,Not Found,,,FALSE,
+RB2,Norman Greenbaum - Spirit in the Sky,https://www.youtube.com/watch?v=YqYN-1vMM9k,10167,,FALSE,
+RB2,Panic at the Disco - Nine in the Afternoon,https://www.youtube.com/watch?v=yCto3PCn8wo,2876,,FALSE,
+RB2,Paramore - That's What You Get,https://www.youtube.com/watch?v=1kz6hNDlEEg,-2709,,FALSE,
+RB2,Pearl Jam - Alive,Not Found,,,FALSE,
+RB2,Rage Against the Machine - Testify,https://www.youtube.com/watch?v=Q3dvbM6Pias,-3701,,FALSE,
+RB2,Ratt - Round and Round,https://www.youtube.com/watch?v=0u8teXR8VE4,-2167,99.75,FALSE,
+RB2,Red Hot Chili Peppers - Give It Away,https://www.youtube.com/watch?v=Mr_uHJPUlO8,467,,FALSE,
+RB2,Rise Against - Give It All,https://www.youtube.com/watch?v=dhldbymXK-8,-3876,,FALSE,
+RB2,Rush - The Trees (Vault Edition),Not Found,,,FALSE,
+RB2,Silversun Pickups - Lazy Eye,https://www.youtube.com/watch?v=j1DsAXoU-Yw,-2800,,TRUE,"Shorter Edit, sync at the start"
+RB2,Smashing Pumpkins - Today,https://www.youtube.com/watch?v=xmUZ6nCFNoU,18542,99.55,FALSE,Longer Edit
+RB2,Social Distortion - I Was Wrong,https://www.youtube.com/watch?v=aXAU4MmMIMo,-1734,,FALSE,
+RB2,Sonic Youth - Teen Age Riot,https://www.youtube.com/watch?v=tPytYrYqDbA,-85267,,FALSE,Way Short edit
+RB2,Soundgarden - Spoonman,https://www.youtube.com/watch?v=T0_zzCLLRvE,10917,99.8,FALSE,
+RB2,Speck - Conventional Lover,Not Found,,,FALSE,
+RB2,Squeeze - Cool for Cats,https://www.youtube.com/watch?v=uJ2cEc_TCH8,-2960,,FALSE,
+RB2,Steely Dan - Bodhisattva,Not Found,,,FALSE,
+RB2,Steve Miller Band - Rock'n Me,Not Found,,,FALSE,
+RB2,Survivor - Eye of the Tiger,https://www.youtube.com/watch?v=btPJPFnesV4,-3709,,FALSE,
+RB2,System of a Down - Chop Suey,https://www.youtube.com/watch?v=CSvFpBOe8eY,-3584,,FALSE,
+RB2,Talking Heads - Psycho Killer,https://www.youtube.com/watch?v=CJ54eImz88w,-2584,100.2,FALSE,
+RB2,Tenacious D - Master Exploder,https://www.youtube.com/watch?v=80DtQD5BQ_A,42300,,TRUE,
+RB2,Testament - Souls of Black,https://www.youtube.com/watch?v=8YT8XX-640w,-8480,96.95,FALSE,"Not Perfect, seems to be a re-recording"
+RB2,That Handsome Devil - Rob the Prez-O-Dent,https://www.youtube.com/watch?v=ZjHhwRI6TnE,9959,,FALSE,Fan Music Video
+RB2,The Allman Brothers Band - Ramblin' Man,Not Found,,,FALSE,
+RB2,The Donnas - New Kid in School,Not Found,,,FALSE,
+RB2,The Grateful Dead - Alabama Getaway,Not Found,,,FALSE,
+RB2,The Guess Who - American Woman,Not Found,,,FALSE,
+RB2,The Main Drag - A Jagged Gorgeous Winter,https://www.youtube.com/watch?v=yuG_jxi37RM,-2567,,FALSE,
+RB2,The Mighty Mighty Bosstones - Where'd You Go,https://www.youtube.com/watch?v=TjPB3jROgco,8840,103.23,FALSE,
+RB2,The Muffs - Kids in America,Not Found,,,FALSE,
+RB2,The Offspring - Come Out and Play (Keep 'Em Separated),https://www.youtube.com/watch?v=1jOk8dk-qaU,-1934,,FALSE,
+RB2,The Presidents of the United States of America - Lump,https://www.youtube.com/watch?v=xjwkXYB4nHs,-3067,100.2,FALSE,
+RB2,The Replacements - Alex Chilton,https://www.youtube.com/watch?v=ftTOEJfzdq0,-4133,,FALSE,
+RB2,The Sterns - Supreme Girl,Not Found,,,FALSE,
+RB2,The Who - Pinball Wizard,Not Found,,,FALSE,
+RB3,Amy Winehouse - Rehab,https://www.youtube.com/watch?v=KUmZp8pR1uc,-560,,FALSE,
+RB3,Anthrax - Caught in a Mosh,Not Found,,,FALSE,
+RB3,At the Drive-In - One Armed Scissor,https://www.youtube.com/watch?v=QpELGD0vFrA,-2000,99.9,FALSE,
+RB3,Avenged Sevenfold - Beast and the Harlot,https://www.youtube.com/watch?v=7bDg7n-chhU,-32625,,TRUE,"Shorter Edit, needs to be recut"
+RB3,Big Country - In a Big Country,https://www.youtube.com/watch?v=657TZDHZqj4,-22440,99,TRUE,
+RB3,Blondie - Heart of Glass,https://www.youtube.com/watch?v=WGU_4-5RaxU,4560,100.1,FALSE,
+RB3,"Bob Marley and the Wailers - Get Up, Stand Up",Not Found,,,FALSE,
+RB3,Chicago - 25 or 6 to 4,Not Found,,,FALSE,
+RB3,David Bowie - Space Oddity,https://www.youtube.com/watch?v=iYYRH4apXDo,-2480,,FALSE,
+RB3,Deep Purple - Smoke on the Water,https://www.youtube.com/watch?v=Q2FzZSBD5LE,2375,,FALSE,
+RB3,Def Leppard - Foolin',https://www.youtube.com/watch?v=9SnxBvH-0Mc,-800,,FALSE,
+RB3,Devo - Whip It,Not Found,,,FALSE,
+RB3,Dio - Rainbow in the Dark,https://www.youtube.com/watch?v=PrBUjXaRSUQ,-2167,100.4,FALSE,
+RB3,Dire Straits - Walk of Life,https://www.youtube.com/watch?v=kd9TlGDZGkI,-3876,,FALSE,
+RB3,Dover - King George,https://www.youtube.com/watch?v=wbM9RtOGdKE,-3960,,TRUE,
+RB3,Echo & The Bunnymen - The Killing Moon,https://www.youtube.com/watch?v=LWz0JC7afNQ,8720,99.4,FALSE,Shorter Edit
+RB3,Elton John - Saturday Night's Alright for Fighting,Not Found,,,FALSE,
+RB3,Faith No More - MidLife Crisis,https://www.youtube.com/watch?v=U8b88US-6ts,-11375,99,FALSE,"Shorter Edit, loses sync quite early"
+RB3,Filter - Hey Man Nice Shot,https://www.youtube.com/watch?v=o9mJ82x_l-E,-15709,100.15,FALSE,"Lose sync, different edit"
+RB3,Foreigner - Cold as Ice,https://www.youtube.com/watch?v=ySb1f9zWJkQ,-2200,100.43,FALSE,
+RB3,Golden Earring - Radar Love,https://www.youtube.com/watch?v=aRlSHG5hRY4,-4080,,FALSE,"Short Edit, Need Recut"
+RB3,H.I.M - Killing Loneliness,https://www.youtube.com/watch?v=CQ9JdDAbKH0,-10042,,FALSE,"Short Edit, desync around 1:35"
+RB3,Huey Lewis and the News - The Power of Love,https://www.youtube.com/watch?v=wBl2QGAIx1s,130542,100.78,FALSE,Story at the beginning
+RB3,Hypernova - Viva la Resistance,Not Found,,,FALSE,
+RB3,Ida Maria - Oh My God,https://www.youtube.com/watch?v=eED30qLA0KY,-2667,,FALSE,"Bridge Shortened, break sync at aroun 1:22"
+RB3,INXS - Need You Tonight,https://www.youtube.com/watch?v=F93ywiGMDnQ,4560,100.174,FALSE,
+RB3,James Brown - I Got You (I Feel Good),Not Found,,,FALSE,
+RB3,Jane's Addiction - Been Caught Stealing,https://www.youtube.com/watch?v=jrwjiO1MCVs,7501,100.108,FALSE,
+RB3,Joan Jett & The Blackhearts - I Love Rock N' Roll,https://www.youtube.com/watch?v=wMsazR6Tnf8,24367,99.379,FALSE,
+RB3,John Lennon - Imagine,https://www.youtube.com/watch?v=Ts0XSyWpMnU,34680,,FALSE,
+RB3,Juanes - Me Enamora,https://www.youtube.com/watch?v=voxgN3Dhjuo,375,,FALSE,
+RB3,Lynyrd Skynyrd - Free Bird,https://www.youtube.com/watch?v=MQNRKX8GwPo,-8417,99.85,FALSE,
+RB3,Maná - Oye Mi Amor,https://www.youtube.com/watch?v=h0p8yTqj8i4,12876,,FALSE,
+RB3,Marilyn Manson - The Beautiful People,https://www.youtube.com/watch?v=Ypkv0HeUvTc,3917,,FALSE,
+RB3,Metric - Combat Baby,https://www.youtube.com/watch?v=6rMfPvv3BMs,-2200,99.875,FALSE,
+RB3,Night Ranger - Sister Christian,https://www.youtube.com/watch?v=z92bmlcmyq0,1209,98.8,FALSE,"Different edit, lose sync at 2:19"
+RB3,Ozzy Osbourne - Crazy Train,https://www.youtube.com/watch?v=FVovq9TGBw0,7868,98.15,FALSE,"Live Audio used for video, lose sync after Solo"
+RB3,Paramore - Misery Business,https://www.youtube.com/watch?v=aCyGvGEtOwc,-4542,,FALSE,
+RB3,Phish - Llama,Not Found,,,FALSE,
+RB3,Phoenix - Lasso,Not Found,,,FALSE,
+RB3,Poni Hoax - Antibodies,https://www.youtube.com/watch?v=E0BOBnIbU_Q,1240,,FALSE,
+RB3,"Pretty Girls Make Graves - Something Bigger, Something Brighter",Not Found,,,FALSE,
+RB3,Primus - Jerry Was a Race Car Driver,https://www.youtube.com/watch?v=LBQ2305fLeA,27792,,FALSE,
+RB3,Queen - Bohemian Rhapsody,https://www.youtube.com/watch?v=fJ9rUzIMcZQ,-4760,100.864,FALSE,
+RB3,Queens of the Stone Age - No One Knows,https://www.youtube.com/watch?v=s88r_q7oufE,-3250,99.9,FALSE,
+RB3,Rammstein - Du Hast,https://www.youtube.com/watch?v=W3q8Od5qJio,-3800,,TRUE,
+RB3,Ramones - I Wanna Be Sedated,https://www.youtube.com/watch?v=bm51ihfi1p4,-2934,,FALSE,
+RB3,Rilo Kiley - Portions for Foxes,https://www.youtube.com/watch?v=Gw0YeT0nJ3A,-16292,,TRUE,
+RB3,Riverboat Gamblers - Don't Bury Me... I'm Still Not Dead,https://www.youtube.com/watch?v=NY4ADPAt1rI,18083,,TRUE,
+RB3,Roxette - The Look,https://www.youtube.com/watch?v=eAByAzEkI1c,-4667,100.115,FALSE,
+RB3,Slipknot - Before I Forget,https://www.youtube.com/watch?v=qw2LU1yS7aw,-13917,,FALSE,"Shorter Intro, NEEDS recut, desync real fast"
+RB3,Smash Mouth - Walking on the Sun,https://www.youtube.com/watch?v=LQj--Kjn0z8,-2334,99.838,FALSE,
+RB3,Spacehog - In the Meantime,https://www.youtube.com/watch?v=PCsGRCf8T9Y,-5209,100.1,FALSE,"Shorter edit, desync at the end"
+RB3,Steve Miller Band - Fly Like an Eagle,Not Found,,,FALSE,
+RB3,Stone Temple Pilots - Plush,https://www.youtube.com/watch?v=V5UOC0C0x8Q,-15467,,FALSE,"Shorter edit, desync at 1:35, should recut"
+RB3,Swingin' Utters - This Bastard's Life,Not Found,,,FALSE,
+RB3,T. Rex - 20th Century Boy,https://www.youtube.com/watch?v=c7nbXljpnq0,-880,100.366,FALSE,
+RB3,Tears for Fears - Everybody Wants to Rule the World,https://www.youtube.com/watch?v=aGCdLKXNF3w,30520,101.778,FALSE,
+RB3,Tegan and Sara - The Con,https://www.youtube.com/watch?v=IK7THPiRw8Q,-2501,,TRUE,
+RB3,The B-52's - Rock Lobster,https://www.youtube.com/watch?v=Oh5J33KAaqw,-4600,99.5,FALSE,
+RB3,The Beach Boys - Good Vibrations (Live),https://www.youtube.com/watch?v=apBWI6xrbLY,-4167,,FALSE,"Not the same version, but no singing/instrument, so sync doesn’t matter"
+RB3,The Cure - Just Like Heaven,https://www.youtube.com/watch?v=n3nPiBai66M,-3640,,FALSE,Different edit lose sync 1:30 in
+RB3,The Doobie Brothers - China Grove,Not Found,,,FALSE,
+RB3,The Doors - Break on Through (To the Other Side),https://www.youtube.com/watch?v=gdnzBNMfZfo,-1968,99.493,FALSE,
+RB3,The Flaming Lips - Yoshimi Battles the Pink Robots Pt. 1,https://www.youtube.com/watch?v=ZdDHi5SSIlM,-13000,,FALSE,Shorter edit
+RB3,The J. Geils Band - Centerfold,https://www.youtube.com/watch?v=BqDjMZKf-wg,-1584,99.91,FALSE,
+RB3,The Jimi Hendrix Experience - Crosstown Traffic,Not Found,,,FALSE,
+RB3,The Muffs - Outer Space,Not Found,,,FALSE,
+RB3,The Police - Don't Stand So Close to Me,https://www.youtube.com/watch?v=KNIZofPB8ZM,11292,101.338,FALSE,
+RB3,The Raveonettes - Last Dance,https://www.youtube.com/watch?v=9TL2B-iiVhA,-3500,98.846,FALSE,
+RB3,The Smiths - Stop Me if You Think You've Heard This One Before,https://www.youtube.com/watch?v=SckD99B51IA,-3400,,FALSE,
+RB3,The Sounds - Living in America,https://www.youtube.com/watch?v=DVarhSlAYwI,-3933,,FALSE,
+RB3,The Vines - Get Free,https://www.youtube.com/watch?v=asOvnGHwtDU,-3320,,FALSE,
+RB3,The White Stripes - The Hardest Button to Button,https://www.youtube.com/watch?v=K4dx42YzQCE,-800,,FALSE,
+RB3,The Who - I Can See for Miles,https://www.youtube.com/watch?v=DdCySh8lW2E,-5000,98.4,FALSE,Shorter Edit
+RB3,Them Crooked Vultures - Dead End Friends,Not Found,,,FALSE,
+RB3,Tokio Hotel - Humanoid,Not Found,,,FALSE,
+RB3,Tom Petty and the Heartbreakers - I Need to Know,https://www.youtube.com/watch?v=qdMwneWwzEs,1133,97.396,FALSE,"Live Version, syncs ok-ish"
+RB3,WAR - Low Rider,https://www.youtube.com/watch?v=BsrqKE1iqqo,24042,100.8,FALSE,
+RB3,Warren Zevon - Werewolves of London,https://www.youtube.com/watch?v=qae25976UgA,-3667,100.199,FALSE,
+RB3,Whitesnake - Here I Go Again,https://www.youtube.com/watch?v=WyF8RHM1OCg,-4600,99.9,FALSE,
+DLC1,System of a Down - B.Y.O.B,https://www.youtube.com/watch?v=zUzd9KyIDrM,33,100.207,FALSE,
+RB4,38 Special - Caught Up In You,https://www.youtube.com/watch?v=zg21Rkew874,-1567,,FALSE,
+RB4,4 Non Blondes - What's Up,https://www.youtube.com/watch?v=6NXnxTNIWkc,-1417,99.99,FALSE,
+RB4,Aerosmith - Toys in the Attic,Not Found,,,FALSE,
+RB4,Arctic Monkeys - Arabella,https://www.youtube.com/watch?v=Nj8r3qmOoZ8,22417,,FALSE,
+RB4,Avenged Sevenfold - Hail to the King,https://www.youtube.com/watch?v=DelhLppPSxY,584,,FALSE,
+RB4,Benjamin Booker - Violent Shiver,https://www.youtube.com/watch?v=zm-rb8k1HkU,-3626,,FALSE,
+RB4,Brad Paisley - Start a Band (ft. Keith Urban),https://www.youtube.com/watch?v=9F_FN4ygjTo,18167,,FALSE,
+RB4,Brandi Carlile - Mainstream Kid,https://www.youtube.com/watch?v=hQyc89jQXqY,-3417,,FALSE,
+RB4,Cake - Short Skirt-Long Jacket,https://www.youtube.com/watch?v=X5KmB8Laemg,6767,,FALSE,
+RB4,Dark Wheels - V-Bomb,Not Found,,,FALSE,
+RB4,Disturbed - Prayer,https://www.youtube.com/watch?v=DWSlOCEzRGo,1542,99.9,TRUE,
+RB4,Dream Theater - Metropolis - Part 1 The Miracle and the Sleeper,Not Found,,,FALSE,
+RB4,Duck & Cover - Knock Em Down,Not Found,,,FALSE,
+RB4,Eddie Japan - Albert,Not Found,,,FALSE,
+RB4,Elvis Presley - Suspicious Minds,https://www.youtube.com/watch?v=WrMGGouem3c,-3917,100.66,FALSE,
+RB4,Fall Out Boy - Centuries,https://www.youtube.com/watch?v=LBr7kECsjcQ,7000,,FALSE,
+RB4,Fleetwood Mac - You Make Loving Fun,Not Found,,,FALSE,
+RB4,Foo Fighters - The Feast and the Famine,https://www.youtube.com/watch?v=c6fR_mp8gag,-3167,,FALSE,
+RB4,Gary Clark Jr - Ain't Messin 'Round,https://www.youtube.com/watch?v=fyBem5-Bfpg,-2458,99.918,FALSE,
+RB4,Gin Blossoms - Follow You Down,https://www.youtube.com/watch?v=5LuH0ywYVQc,-4584,100.1,FALSE,Shorter Edit
+RB4,Grouplove - Tongue Tied,https://www.youtube.com/watch?v=1x1wjGKHjBI,20801,100.03,FALSE,
+RB4,Halestorm - I Miss The Misery,https://www.youtube.com/watch?v=YpJAmlnBxoA,6209,,FALSE,
+RB4,Heart - Kick It Out,Not Found,,,FALSE,
+RB4,Heaven's Basement - I Am Electric,https://www.youtube.com/watch?v=XjRaKId4Rps,-440,,FALSE,
+RB4,Imagine Dragons - I Bet My Life,https://www.youtube.com/watch?v=4ht80uzIhNs,9083,,FALSE,
+RB4,Jack White - Lazaretto,https://www.youtube.com/watch?v=qI-95cTMeLM,5667,100.1,FALSE,
+RB4,Jeff Allen - Recession (ft. Noelle LeBlanc and Naoko Takamoto),Not Found,,,FALSE,
+RB4,Johnny Blazes and The Pretty Boys - Cold Clear Light,Not Found,,,FALSE,
+RB4,Judas Priest - Halls of Valhalla,https://www.youtube.com/watch?v=GuDg3u-ZPEM,-14880,101.05,FALSE,"Live, syncs fine"
+RB4,Lightning Bolt - Dream Genie,Not Found,,,FALSE,
+RB4,Little Big Town - Little White Church,https://www.youtube.com/watch?v=B077Dw_zDe0,-4334,,FALSE,
+RB4,Live - All Over You,https://www.youtube.com/watch?v=olQXfB_Jujs,-2640,104,FALSE,Unplugged Live synced
+RB4,Lucius - Turn It Around,https://www.youtube.com/watch?v=4QSF8bgqgC4,26625,99.913,FALSE,
+RB4,Lynyrd Skynyrd - That Smell,https://www.youtube.com/watch?v=hib4n9RmFrQ,9767,99,FALSE,"Live version, syncs fine"
+RB4,Mark Ronson - Uptown Funk (ft. Bruno Mars),https://www.youtube.com/watch?v=OPf0YbXqDm0,-3876,,FALSE,
+RB4,Mumford & Sons - The Wolf,https://www.youtube.com/watch?v=vD3iXpv4h-o,-1459,,FALSE,
+RB4,Ozzy Osbourne - Miracle Man,https://www.youtube.com/watch?v=j34juXrJWqw,7901,99.95,FALSE,
+RB4,Paramore - Still Into You,https://www.youtube.com/watch?v=OblL026SvD4,3626,,FALSE,
+RB4,Queens of the Stone Age - My God is the Sun,https://www.youtube.com/watch?v=iFca32_7YUU,-4367,,FALSE,
+RB4,R.E.M - The One I Love,https://www.youtube.com/watch?v=j7oQEPfe-O8,-3375,,FALSE,
+RB4,"Rick Derringer - Rock and Roll, Hoochie Koo",Not Found,,,FALSE,
+RB4,Rush - A Passage To Bangkok,Not Found,,,FALSE,
+RB4,Scandal - The Warrior,https://www.youtube.com/watch?v=47y5bo8wtqM,-1667,100.7,FALSE,
+RB4,Scorpions - No One Like You,https://www.youtube.com/watch?v=6VwbyBGbqPY,-3133,,FALSE,"Not same version, IG is slower/lower, no sync needed as it’s a story video"
+RB4,Slydigs - Light the Fuse,https://www.youtube.com/watch?v=VyaI34873pM,-2520,,FALSE,
+RB4,Soul Remnants - Dead Black (Heart of Ice),Not Found,,,FALSE,
+RB4,Soundgarden - Superunknown,https://www.youtube.com/watch?v=AwdjreJKggg,-2167,99.85,FALSE,
+RB4,Spin Doctors - Little Miss Can't Be Wrong,https://www.youtube.com/watch?v=cXWbMu4PtpE,-3200,100.1,FALSE,
+RB4,St. Vincent - Birth In Reverse,https://www.youtube.com/watch?v=TAdARF4rGcQ,-3959,,FALSE,
+RB4,System of a Down - Spiders,https://www.youtube.com/watch?v=SqZNMvIEHhs,3584,99.7,FALSE,
+RB4,The Black Keys - Fever,https://www.youtube.com/watch?v=trk7P-9QDyc,-250,,FALSE,
+RB4,The Both - Milwaukee,https://www.youtube.com/watch?v=VqSYzOXkthg,49417,,FALSE,
+RB4,The Cure - Friday I'm in Love,https://www.youtube.com/watch?v=mGgMZpGYiy8,-520,,FALSE,
+RB4,The Killers - Somebody Told Me,https://www.youtube.com/watch?v=Y5fBdpreJiU,-2292,,FALSE,
+RB4,The Mighty Mighty Bosstones - The Impression That I Get,https://www.youtube.com/watch?v=NIGMUAMevH0,-3534,99.855,FALSE,
+RB4,The Outfield - Your Love,https://www.youtube.com/watch?v=4N1iwQxiHrs,32626,,FALSE,
+RB4,The Protomen - Light Up The Night,https://www.youtube.com/watch?v=B8pywyGywWg,339167,,FALSE,"Long Story Video, should probably cut at the end, 7 minutes extra at the end"
+RB4,The Warning - Free Falling,https://www.youtube.com/watch?v=wlipfTBaLII,-2367,97.128,FALSE,Live
+RB4,The Who - The Seeker,https://www.youtube.com/watch?v=Xx-QkUhz5Oc,-5680,99.6,FALSE,
+RB4,Tijuana Sweetheart - Pistol Whipped,Not Found,,,FALSE,
+RB4,U2 - Cedarwood Road,https://www.youtube.com/watch?v=Wzub9tvqChc,-3200,,FALSE,Live
+RB4,U2 - I Will Follow,https://www.youtube.com/watch?v=-sLzV00gNUo,-4240,99.9,FALSE,
+RB4,Van Halen - Panama,https://www.youtube.com/watch?v=fuKDBPw8wQA,6934,,FALSE,
+RB4,Van Morrison - Brown Eyed Girl,Not Found,,,FALSE,
+RB4,White Denim - At Night In Dreams,Not Found,,,FALSE,
