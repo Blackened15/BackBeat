@@ -4,6 +4,7 @@
 
 import subprocess, os, glob, sys, csv, re, shutil, tempfile, zipfile
 import urllib.request
+import webbrowser
 from urllib.parse import urlparse
 import tkinter as tk
 import tkinter.messagebox as _mb
@@ -758,24 +759,24 @@ def is_row_processed(row, processed_entries):
 
 
 def is_row_identity_matched(row, processed_entries):
-    """Return True when a processed entry shares the same Filename and Youtube URL,
-    even if other parameters (Delay, Speed, Remove Black Bar) differ."""
+    """Return True when a processed entry shares the same Source+Filename,
+    even if URL or other parameters differ."""
+    source = row.get('Source', '').strip().casefold()
     filename = row.get('Filename', '').strip().casefold()
-    youtube = row.get('Youtube', '').strip().casefold()
     for proc_entry in processed_entries:
-        if (proc_entry.get('Filename', '').strip().casefold() == filename
-                and proc_entry.get('Youtube', '').strip().casefold() == youtube):
+        if (proc_entry.get('Source', '').strip().casefold() == source
+                and proc_entry.get('Filename', '').strip().casefold() == filename):
             return True
     return False
 
 
 def find_row_identity_match(row, processed_entries):
-    """Return the first processed entry matching Filename+Youtube identity."""
+    """Return the first processed entry matching Source+Filename identity."""
+    source = row.get('Source', '').strip().casefold()
     filename = row.get('Filename', '').strip().casefold()
-    youtube = row.get('Youtube', '').strip().casefold()
     for proc_entry in processed_entries:
-        if (proc_entry.get('Filename', '').strip().casefold() == filename
-                and proc_entry.get('Youtube', '').strip().casefold() == youtube):
+        if (proc_entry.get('Source', '').strip().casefold() == source
+                and proc_entry.get('Filename', '').strip().casefold() == filename):
             return proc_entry
     return None
 
@@ -818,6 +819,8 @@ def build_song_selection_entries(rows, processed_entries):
             if proc_entry:
                 if row.get('Source', '').strip() != proc_entry.get('Source', '').strip():
                     updated_columns.add('source')
+                if row.get('Youtube', '').strip() != proc_entry.get('Youtube', '').strip():
+                    updated_columns.add('link')
                 if norm_delay(row.get('Delay', '')) != norm_delay(proc_entry.get('Delay', '')):
                     updated_columns.add('delay')
                 if norm_speed(row.get('Speed', '')) != norm_speed(proc_entry.get('Speed', '')):
@@ -879,7 +882,7 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
     # --- Treeview table ---
     tree_frame = ttk.Frame(outer)
     tree_frame.grid(row=3, column=0, sticky='nsew')
-    columns = ('selected', 'status', 'filename', 'source', 'delay', 'speed', 'crop')
+    columns = ('selected', 'status', 'filename', 'link', 'source', 'delay', 'speed', 'crop')
     tree = ttk.Treeview(tree_frame, columns=columns, show='headings', selectmode='none')
     vsb = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
     tree.configure(yscrollcommand=vsb.set)
@@ -892,6 +895,7 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
         'selected': 'Selected',
         'status': 'Status',
         'filename': 'Filename',
+        'link': 'Link',
         'source': 'Source',
         'delay': 'Delay',
         'speed': 'Speed',
@@ -900,7 +904,8 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
 
     tree.column('selected', width=86,  minwidth=72,  stretch=False, anchor='center')
     tree.column('status',   width=150, minwidth=120, stretch=False, anchor='w')
-    tree.column('filename', width=320, minwidth=120, stretch=True,  anchor='w')
+    tree.column('filename', width=300, minwidth=120, stretch=True,  anchor='w')
+    tree.column('link',     width=64,  minwidth=52,  stretch=False, anchor='center')
     tree.column('source',   width=120, minwidth=80,  stretch=False, anchor='w')
     tree.column('delay',    width=72,  minwidth=60,  stretch=False, anchor='center')
     tree.column('speed',    width=72,  minwidth=60,  stretch=False, anchor='center')
@@ -934,11 +939,13 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
         crop_display = 'Yes' if remove_bars else 'No'
         filename_display = output_basename(row.get('Filename', '')) or '<missing>'
         source_display = row.get('Source', '').strip() or '\u2014'
+        link_display = 'Link' if row.get('Youtube', '').strip() else '\u2014'
 
         return (
             _selection_mark(selected_states[entry['key']]),
             entry['status'],
             filename_display,
+            _star_if_updated(link_display, 'link' in updated_columns),
             _star_if_updated(source_display, 'source' in updated_columns),
             _star_if_updated(delay_display, 'delay' in updated_columns),
             _star_if_updated(speed_display, 'speed' in updated_columns),
@@ -953,6 +960,8 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
             return status_rank.get(entry['status'], 99)
         if col == 'filename':
             return (output_basename(row.get('Filename', '')) or '').casefold()
+        if col == 'link':
+            return row.get('Youtube', '').strip().casefold()
         if col == 'source':
             return row.get('Source', '').strip().casefold()
         if col == 'delay':
@@ -1036,11 +1045,52 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
         iid = tree.identify_row(event.y)
         if iid and iid in item_to_key:
             key = item_to_key[iid]
+
+            clicked_col = tree.identify_column(event.x)
+            if clicked_col:
+                col_index = int(clicked_col[1:]) - 1
+                if 0 <= col_index < len(columns) and columns[col_index] == 'link':
+                    url = entry_by_key[key]['row'].get('Youtube', '').strip()
+                    if url:
+                        webbrowser.open_new_tab(url)
+                    return
+
             selected_states[key] = not selected_states[key]
             _refresh_row(key)
             update_selection_count()
 
     tree.bind('<Button-1>', on_tree_click)
+
+    def on_tree_motion(event):
+        region = tree.identify('region', event.x, event.y)
+        if region != 'cell':
+            tree.configure(cursor='')
+            return
+
+        iid = tree.identify_row(event.y)
+        if not iid or iid not in item_to_key:
+            tree.configure(cursor='')
+            return
+
+        clicked_col = tree.identify_column(event.x)
+        if not clicked_col:
+            tree.configure(cursor='')
+            return
+
+        col_index = int(clicked_col[1:]) - 1
+        is_link_col = 0 <= col_index < len(columns) and columns[col_index] == 'link'
+        if is_link_col:
+            key = item_to_key[iid]
+            url = entry_by_key[key]['row'].get('Youtube', '').strip()
+            tree.configure(cursor='hand2' if url else '')
+        else:
+            tree.configure(cursor='')
+
+    def on_tree_leave(_event):
+        tree.configure(cursor='')
+
+    tree.bind('<Motion>', on_tree_motion)
+    tree.bind('<Leave>', on_tree_leave)
 
     def apply_selection_to_all(value):
         for key in selected_states:

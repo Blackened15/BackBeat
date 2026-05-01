@@ -77,7 +77,46 @@ The right side contains CSV selection controls:
 - `Choose songs...`
 - a live row count showing `X row(s) in source, Y to process`
 
-`Choose songs...` opens a checkbox list built from the current CSV and Source selection. Only songs with valid URLs are shown. Songs already found in `backbeat_processed.csv` stay visible but start unchecked so you can manually re-run them.
+`Choose songs...` now opens a sortable table (Treeview) built from the current CSV and Source selection. Only songs with valid URLs are shown.
+
+The picker includes these columns:
+
+- `Selected` (checkbox marker)
+- `Status`
+- `Filename`
+- `Link` (click to open the `Youtube` URL)
+- `Source`
+- `Delay`
+- `Speed`
+- `Crop Bars`
+
+Status values:
+
+- `new`: song is not in `backbeat_processed.csv`
+- `update available`: same `Source` + `Filename` exists in cache, but one or more settings changed
+- `already processed`: full cache match with identical settings
+
+Default checkbox behavior:
+
+- `new` and `update available` start checked
+- `already processed` starts unchecked
+
+When a song is `update available`, changed values are wrapped as `*value*` in the affected columns (`Link`, `Delay`, `Speed`, `Crop Bars`).
+
+Picker controls include:
+
+- `Select all`
+- `Select unprocessed`
+- `Clear all`
+- `Show` filter radios: `All`, `New`, `Updates`, `Processed`
+
+Sorting:
+
+- click any column header to sort
+- click the same header again to reverse
+- `Selected` and `Status` can be sorted independently
+
+Filtering and sorting do not alter your selection state; they only change what is currently shown and order.
 
 Hover tooltips are available on the labeled controls and checkboxes.
 
@@ -150,9 +189,13 @@ That means changing format, quality, browser cookies, or WebM profile does not i
 
 If checked, BackBeat processes all selected rows even if they already exist in `backbeat_processed.csv`.
 
+When the manual song picker is active, selected songs already run regardless of cache, so this option mainly affects non-manual runs.
+
 ### Mark All As Processed
 
 If checked, BackBeat adds all selected rows to `backbeat_processed.csv` without downloading or encoding anything, then exits.
+
+With manual song selection active, this marks only the rows checked in `Choose songs...`.
 
 Use this only when those rows were already handled elsewhere and you want future runs to skip them.
 
