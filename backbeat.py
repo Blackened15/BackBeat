@@ -301,10 +301,16 @@ class _Tooltip:
         self._widget = widget
         self._text = text
         self._win = None
-        widget.bind('<Enter>', self._show)
-        widget.bind('<Leave>', self._hide)
+        self._check_after_id = None
+        widget.bind('<Enter>', self._show, add='+')
+        widget.bind('<Leave>', self._hide, add='+')
+        widget.bind('<ButtonPress>', self._hide, add='+')
+        widget.bind('<FocusOut>', self._hide, add='+')
+        widget.bind('<Destroy>', self._hide, add='+')
 
     def _show(self, _event=None):
+        if self._win and self._win.winfo_exists():
+            return
         x = self._widget.winfo_rootx() + 20
         y = self._widget.winfo_rooty() + self._widget.winfo_height() + 4
         self._win = tw = tk.Toplevel(self._widget)
@@ -315,36 +321,86 @@ class _Tooltip:
             background='#ffffe0', relief='solid', borderwidth=1,
             wraplength=320, padx=6, pady=4,
         ).pack()
+        self._queue_hover_check()
+
+    def _queue_hover_check(self):
+        if self._check_after_id is not None:
+            self._widget.after_cancel(self._check_after_id)
+        self._check_after_id = self._widget.after(100, self._check_hover)
+
+    def _check_hover(self):
+        self._check_after_id = None
+        if not self._win or not self._win.winfo_exists():
+            return
+        try:
+            pointer_x, pointer_y = self._widget.winfo_pointerxy()
+            target_widget = self._widget.winfo_containing(pointer_x, pointer_y)
+        except tk.TclError:
+            self._hide()
+            return
+
+        if self._is_widget_or_descendant(target_widget):
+            self._queue_hover_check()
+            return
+
+        self._hide()
+
+    def _is_widget_or_descendant(self, widget):
+        while widget is not None:
+            if widget is self._widget:
+                return True
+            widget = widget.master
+        return False
 
     def _hide(self, _event=None):
+        if self._check_after_id is not None:
+            self._widget.after_cancel(self._check_after_id)
+            self._check_after_id = None
         if self._win:
             self._win.destroy()
             self._win = None
 
 
-def open_settings_dialog():
-    """Prompt for runtime settings before batch processing starts."""
+def open_startup_dialog(csv_folder):
+    """Prompt for runtime settings and CSV/source selection in one window."""
+    csv_files = list_csv_files(csv_folder)
+    if not csv_files:
+        return None
+
     root = tk.Tk()
-    root.title('BackBeat Settings')
+    root.title('BackBeat Setup')
     root.resizable(False, False)
 
-    frame = ttk.Frame(root, padding=16)
+    frame = ttk.Frame(root, padding=18)
     frame.grid(row=0, column=0, sticky='nsew')
+
+    settings_frame = ttk.LabelFrame(frame, text='Encoding Settings', padding=12)
+    settings_frame.grid(row=0, column=0, sticky='nsew', padx=(0, 12))
+    source_frame = ttk.LabelFrame(frame, text='CSV Selection', padding=12)
+    source_frame.grid(row=0, column=1, sticky='nsew')
 
     browser_var = tk.StringVar(value=detect_default_browser_choice())
     quality_label_var = tk.StringVar(value='Best available')
     format_var = tk.StringVar(value='webm')
     profile_var = tk.StringVar(value=ENCODE_PROFILE)
+    csv_var = tk.StringVar(value=csv_files[0])
+    source_var = tk.StringVar(value='All')
+    ignore_save_var = tk.BooleanVar(value=False)
+    mark_processed_var = tk.BooleanVar(value=False)
+    detail_var = tk.StringVar(value='')
     result = {}
+    current_rows = []
+    processed_csv_path = os.path.join(csv_folder, 'backbeat_processed.csv')
+    processed_entries = load_processed_csv(processed_csv_path)
 
-    browser_lbl = ttk.Label(frame, text='Browser cookies')
+    browser_lbl = ttk.Label(settings_frame, text='Browser cookies')
     browser_lbl.grid(row=0, column=0, sticky='w', pady=(0, 4))
     browser_box = ttk.Combobox(
-        frame,
+        settings_frame,
         textvariable=browser_var,
         values=list(BROWSER_CHOICES.keys()),
         state='readonly',
-        width=22,
+        width=28,
     )
     browser_box.grid(row=1, column=0, sticky='ew', pady=(0, 10))
     _BROWSER_TIP = (
@@ -357,24 +413,24 @@ def open_settings_dialog():
     _Tooltip(browser_lbl, _BROWSER_TIP)
     _Tooltip(browser_box, _BROWSER_TIP)
 
-    ttk.Label(frame, text='Quality').grid(row=2, column=0, sticky='w', pady=(0, 4))
+    ttk.Label(settings_frame, text='Quality').grid(row=2, column=0, sticky='w', pady=(0, 4))
     quality_box = ttk.Combobox(
-        frame,
+        settings_frame,
         textvariable=quality_label_var,
         values=list(QUALITY_PRESETS.keys()),
         state='readonly',
-        width=22,
+        width=28,
     )
     quality_box.grid(row=3, column=0, sticky='ew', pady=(0, 10))
 
-    format_lbl = ttk.Label(frame, text='Output format')
+    format_lbl = ttk.Label(settings_frame, text='Output format')
     format_lbl.grid(row=4, column=0, sticky='w', pady=(0, 4))
     format_box = ttk.Combobox(
-        frame,
+        settings_frame,
         textvariable=format_var,
         values=FORMAT_OPTIONS,
         state='readonly',
-        width=22,
+        width=28,
     )
     format_box.grid(row=5, column=0, sticky='ew', pady=(0, 10))
     _FORMAT_TIP = (
@@ -386,16 +442,16 @@ def open_settings_dialog():
     _Tooltip(format_lbl, _FORMAT_TIP)
     _Tooltip(format_box, _FORMAT_TIP)
 
-    profile_lbl = ttk.Label(frame, text='WebM encode profile')
+    profile_lbl = ttk.Label(settings_frame, text='WebM encode profile')
     profile_lbl.grid(row=6, column=0, sticky='w', pady=(0, 4))
     profile_box = ttk.Combobox(
-        frame,
+        settings_frame,
         textvariable=profile_var,
         values=WEBM_PROFILE_OPTIONS,
         state='readonly',
-        width=22,
+        width=28,
     )
-    profile_box.grid(row=7, column=0, sticky='ew', pady=(0, 10))
+    profile_box.grid(row=7, column=0, sticky='ew')
     _PROFILE_TIP = (
         'Applies to WebM/VP8 output only.\n\n'
         'Auto: adjusts quality by source resolution.\n'
@@ -406,11 +462,129 @@ def open_settings_dialog():
     _Tooltip(profile_lbl, _PROFILE_TIP)
     _Tooltip(profile_box, _PROFILE_TIP)
 
+    csv_lbl = ttk.Label(source_frame, text='CSV file')
+    csv_lbl.grid(row=0, column=0, sticky='w', pady=(0, 4))
+    csv_box = ttk.Combobox(
+        source_frame,
+        textvariable=csv_var,
+        values=csv_files,
+        state='readonly',
+        width=34,
+    )
+    csv_box.grid(row=1, column=0, sticky='ew', pady=(0, 10))
+    _CSV_TIP = (
+        'Choose which CSV file in the script folder to process.\n\n'
+        'When you switch CSV files, the Source list below refreshes automatically '
+        'from that file.'
+    )
+    _Tooltip(csv_lbl, _CSV_TIP)
+    _Tooltip(csv_box, _CSV_TIP)
+
+    source_lbl = ttk.Label(source_frame, text='Source')
+    source_lbl.grid(row=2, column=0, sticky='w', pady=(0, 4))
+    source_box = ttk.Combobox(
+        source_frame,
+        textvariable=source_var,
+        values=['All'],
+        state='readonly',
+        width=34,
+    )
+    source_box.grid(row=3, column=0, sticky='ew', pady=(0, 6))
+    _SOURCE_TIP = (
+        'Choose which setlist source to process from the CSV.\n\n'
+        'All processes every row.\n'
+        'Any other option only processes rows where the Source column matches exactly.'
+    )
+    _Tooltip(source_lbl, _SOURCE_TIP)
+    _Tooltip(source_box, _SOURCE_TIP)
+
+    ignore_save_check = ttk.Checkbutton(source_frame, text='Ignore save file', variable=ignore_save_var)
+    ignore_save_check.grid(row=4, column=0, sticky='w', pady=(0, 6))
+    _IGNORE_SAVE_TIP = (
+        'If checked, process all rows regardless of prior encoding history.\n\n'
+        'Processed entries are still updated after encoding.'
+    )
+    _Tooltip(ignore_save_check, _IGNORE_SAVE_TIP)
+
+    mark_processed_check = ttk.Checkbutton(source_frame, text='Mark all as processed', variable=mark_processed_var)
+    mark_processed_check.grid(row=5, column=0, sticky='w', pady=(0, 6))
+    _MARK_PROCESSED_TIP = (
+        'If checked, add all selected rows to the processed cache without encoding.\n\n'
+        'Use this if you\'ve already encoded these videos and want to skip them.\n'
+        'If you don\'t know what this means, leave it OFF.'
+    )
+    _Tooltip(mark_processed_check, _MARK_PROCESSED_TIP)
+
+    detail_lbl = ttk.Label(source_frame, textvariable=detail_var, foreground='gray')
+    detail_lbl.grid(row=6, column=0, sticky='w', pady=(0, 4))
+
+    def update_detail_display():
+        """Calculate and display how many songs will be processed."""
+        selected_source = source_var.get()
+        ignore_save = ignore_save_var.get()
+
+        filtered_rows = current_rows
+        if selected_source != 'All':
+            selected_source_folded = selected_source.casefold()
+            filtered_rows = [
+                row for row in current_rows
+                if row.get('Source', '').strip().casefold() == selected_source_folded
+            ]
+
+        filtered_rows = [row for row in filtered_rows if has_valid_video_url(row)]
+
+        to_process = 0
+        if ignore_save:
+            to_process = len(filtered_rows)
+        else:
+            for row in filtered_rows:
+                already_processed = False
+                for proc_entry in processed_entries:
+                    if row_matches_processed(row, proc_entry):
+                        already_processed = True
+                        break
+                if not already_processed:
+                    to_process += 1
+
+        total = len(filtered_rows)
+        detail_var.set(f'{total} row(s) in source, {to_process} to process')
+
+    def refresh_sources(_event=None):
+        nonlocal current_rows
+        csv_name = csv_var.get().strip()
+        csv_path = os.path.join(csv_folder, csv_name)
+
+        try:
+            current_rows = load_csv_rows(csv_path)
+        except Exception as exc:
+            current_rows = []
+            source_box.configure(values=['All'])
+            source_var.set('All')
+            detail_var.set(f'Could not read {csv_name}: {exc}')
+            return
+
+        source_values = _unique_csv_values(current_rows, 'Source')
+        options = ['All', *source_values]
+        source_box.configure(values=options)
+        if source_var.get() not in options:
+            source_var.set('All')
+
+        update_detail_display()
+
     def submit():
+        csv_name = csv_var.get().strip()
+        if not csv_name:
+            return
         result['browser'] = BROWSER_CHOICES[browser_var.get()]
         result['quality'] = QUALITY_PRESETS[quality_label_var.get()]
         result['format'] = format_var.get()
         result['encode_profile'] = profile_var.get()
+        result['source'] = source_var.get()
+        result['csv_name'] = csv_name
+        result['csv_path'] = os.path.join(csv_folder, csv_name)
+        result['rows'] = current_rows
+        result['ignore_save_file'] = ignore_save_var.get()
+        result['mark_processed'] = mark_processed_var.get()
         root.destroy()
 
     def cancel():
@@ -418,15 +592,22 @@ def open_settings_dialog():
         root.destroy()
 
     button_frame = ttk.Frame(frame)
-    button_frame.grid(row=8, column=0, sticky='e')
+    button_frame.grid(row=1, column=0, columnspan=2, sticky='e', pady=(14, 0))
     ttk.Button(button_frame, text='Start', command=submit).grid(row=0, column=0, padx=(0, 8))
     ttk.Button(button_frame, text='Cancel', command=cancel).grid(row=0, column=1)
 
+    settings_frame.columnconfigure(0, weight=1)
+    source_frame.columnconfigure(0, weight=1)
     frame.columnconfigure(0, weight=1)
+    frame.columnconfigure(1, weight=1)
     root.columnconfigure(0, weight=1)
     root.protocol('WM_DELETE_WINDOW', cancel)
     root.bind('<Return>', lambda _event: submit())
     root.bind('<Escape>', lambda _event: cancel())
+    csv_box.bind('<<ComboboxSelected>>', refresh_sources)
+    source_var.trace_add('write', lambda *args: update_detail_display())
+    ignore_save_var.trace_add('write', lambda *args: update_detail_display())
+    refresh_sources()
     browser_box.focus_set()
     root.mainloop()
     return result or None
@@ -510,174 +691,6 @@ def has_valid_video_url(row):
         return False
     return parsed.scheme in ('http', 'https') and bool(parsed.netloc)
 
-def open_csv_source_dialog(csv_folder):
-    """Prompt for which CSV file and Source group to process."""
-    csv_files = list_csv_files(csv_folder)
-    if not csv_files:
-        return None
-
-    root = tk.Tk()
-    root.title('BackBeat CSV + Source Filter')
-    root.resizable(False, False)
-
-    frame = ttk.Frame(root, padding=16)
-    frame.grid(row=0, column=0, sticky='nsew')
-
-    csv_var = tk.StringVar(value=csv_files[0])
-    source_var = tk.StringVar(value='All')
-    ignore_save_var = tk.BooleanVar(value=False)
-    mark_processed_var = tk.BooleanVar(value=False)
-    detail_var = tk.StringVar(value='')
-    result = {}
-    current_rows = []
-    processed_csv_path = os.path.join(csv_folder, 'backbeat_processed.csv')
-    processed_entries = load_processed_csv(processed_csv_path)
-
-    csv_lbl = ttk.Label(frame, text='CSV file')
-    csv_lbl.grid(row=0, column=0, sticky='w', pady=(0, 4))
-    csv_box = ttk.Combobox(
-        frame,
-        textvariable=csv_var,
-        values=csv_files,
-        state='readonly',
-        width=34,
-    )
-    csv_box.grid(row=1, column=0, sticky='ew', pady=(0, 10))
-    _CSV_TIP = (
-        'Choose which CSV file in the script folder to process.\n\n'
-        'When you switch CSV files, the Source list below refreshes automatically '
-        'from that file.'
-    )
-    _Tooltip(csv_lbl, _CSV_TIP)
-    _Tooltip(csv_box, _CSV_TIP)
-
-    source_lbl = ttk.Label(frame, text='Source')
-    source_lbl.grid(row=2, column=0, sticky='w', pady=(0, 4))
-    source_box = ttk.Combobox(
-        frame,
-        textvariable=source_var,
-        values=['All'],
-        state='readonly',
-        width=34,
-    )
-    source_box.grid(row=3, column=0, sticky='ew', pady=(0, 6))
-    _SOURCE_TIP = (
-        'Choose which setlist source to process from the CSV.\n\n'
-        'All processes every row.\n'
-        'Any other option only processes rows where the Source column matches exactly.'
-    )
-    _Tooltip(source_lbl, _SOURCE_TIP)
-    _Tooltip(source_box, _SOURCE_TIP)
-
-    ignore_save_check = ttk.Checkbutton(frame, text='Ignore save file', variable=ignore_save_var)
-    ignore_save_check.grid(row=4, column=0, sticky='w', pady=(0, 6))
-    _IGNORE_SAVE_TIP = (
-        'If checked, process all rows regardless of prior encoding history.\n\n'
-        'Processed entries are still updated after encoding.'
-    )
-    _Tooltip(ignore_save_check, _IGNORE_SAVE_TIP)
-
-    mark_processed_check = ttk.Checkbutton(frame, text='Mark all as processed', variable=mark_processed_var)
-    mark_processed_check.grid(row=5, column=0, sticky='w', pady=(0, 6))
-    _MARK_PROCESSED_TIP = (
-        'If checked, add all selected rows to the processed cache without encoding.\n\n'
-        'Use this if you\'ve already encoded these videos and want to skip them.\n'
-        'If you don\'t know what this means, leave it OFF.'
-    )
-    _Tooltip(mark_processed_check, _MARK_PROCESSED_TIP)
-
-    detail_lbl = ttk.Label(frame, textvariable=detail_var, foreground='gray')
-    detail_lbl.grid(row=6, column=0, sticky='w', pady=(0, 12))
-
-    def update_detail_display():
-        """Calculate and display how many songs will be processed."""
-        selected_source = source_var.get()
-        ignore_save = ignore_save_var.get()
-        
-        # Filter rows by source if needed
-        filtered_rows = current_rows
-        if selected_source != 'All':
-            selected_source_folded = selected_source.casefold()
-            filtered_rows = [
-                row for row in current_rows
-                if row.get('Source', '').strip().casefold() == selected_source_folded
-            ]
-
-        # Ignore rows with missing/invalid URLs entirely.
-        filtered_rows = [row for row in filtered_rows if has_valid_video_url(row)]
-        
-        # Count how many will actually be processed
-        to_process = 0
-        if ignore_save:
-            to_process = len(filtered_rows)
-        else:
-            for row in filtered_rows:
-                already_processed = False
-                for proc_entry in processed_entries:
-                    if row_matches_processed(row, proc_entry):
-                        already_processed = True
-                        break
-                if not already_processed:
-                    to_process += 1
-        
-        total = len(filtered_rows)
-        detail_var.set(f'{total} row(s) in source, {to_process} to process')
-
-    def refresh_sources(_event=None):
-        nonlocal current_rows
-        csv_name = csv_var.get().strip()
-        csv_path = os.path.join(csv_folder, csv_name)
-
-        try:
-            current_rows = load_csv_rows(csv_path)
-        except Exception as exc:
-            current_rows = []
-            source_box.configure(values=['All'])
-            source_var.set('All')
-            detail_var.set(f'Could not read {csv_name}: {exc}')
-            return
-
-        source_values = _unique_csv_values(current_rows, 'Source')
-        options = ['All', *source_values]
-        source_box.configure(values=options)
-        if source_var.get() not in options:
-            source_var.set('All')
-
-        update_detail_display()
-
-    def submit():
-        csv_name = csv_var.get().strip()
-        if not csv_name:
-            return
-        result['source'] = source_var.get()
-        result['csv_name'] = csv_name
-        result['csv_path'] = os.path.join(csv_folder, csv_name)
-        result['rows'] = current_rows
-        result['ignore_save_file'] = ignore_save_var.get()
-        result['mark_processed'] = mark_processed_var.get()
-        root.destroy()
-
-    def cancel():
-        result.clear()
-        root.destroy()
-
-    button_frame = ttk.Frame(frame)
-    button_frame.grid(row=7, column=0, sticky='e')
-    ttk.Button(button_frame, text='Process', command=submit).grid(row=0, column=0, padx=(0, 8))
-    ttk.Button(button_frame, text='Cancel', command=cancel).grid(row=0, column=1)
-
-    frame.columnconfigure(0, weight=1)
-    root.columnconfigure(0, weight=1)
-    root.protocol('WM_DELETE_WINDOW', cancel)
-    root.bind('<Return>', lambda _event: submit())
-    root.bind('<Escape>', lambda _event: cancel())
-    csv_box.bind('<<ComboboxSelected>>', refresh_sources)
-    source_var.trace_add('write', lambda *args: update_detail_display())
-    ignore_save_var.trace_add('write', lambda *args: update_detail_display())
-    refresh_sources()
-    csv_box.focus_set()
-    root.mainloop()
-    return result or None
 
 def resolve_webm_profile(width, height):
     """Pick an effective WebM profile for this source size."""
@@ -935,7 +948,15 @@ def process_video(output_name, url, delay_ms, speed_pct, remove_bars, output_dir
 def main():
     global BROWSER, QUALITY, FMT, ENCODE_PROFILE
 
-    settings = open_settings_dialog()
+    csv_folder = os.path.dirname(os.path.abspath(__file__))
+    csv_files = list_csv_files(csv_folder)
+    if not csv_files:
+        print(f'\033[1;91mERROR: No CSV files found in {csv_folder}\033[0m')
+        print('Place one or more .csv files in the same folder as this script.')
+        input('Press Enter to close...')
+        sys.exit(1)
+
+    settings = open_startup_dialog(csv_folder)
     if not settings:
         print('Startup cancelled.')
         sys.exit(0)
@@ -945,25 +966,12 @@ def main():
     FMT = settings['format']
     ENCODE_PROFILE = settings['encode_profile']
 
-    csv_folder = os.path.dirname(os.path.abspath(__file__))
-    csv_files = list_csv_files(csv_folder)
-    if not csv_files:
-        print(f'\033[1;91mERROR: No CSV files found in {csv_folder}\033[0m')
-        print('Place one or more .csv files in the same folder as this script.')
-        input('Press Enter to close...')
-        sys.exit(1)
-
-    source_selection = open_csv_source_dialog(csv_folder)
-    if not source_selection:
-        print('CSV/source selection cancelled.')
-        sys.exit(0)
-
-    csv_path = source_selection['csv_path']
-    selected_csv = source_selection['csv_name']
-    rows = source_selection['rows']
-    selected_source = source_selection['source']
-    ignore_save_file = source_selection.get('ignore_save_file', False)
-    mark_processed = source_selection.get('mark_processed', False)
+    csv_path = settings['csv_path']
+    selected_csv = settings['csv_name']
+    rows = settings['rows']
+    selected_source = settings['source']
+    ignore_save_file = settings.get('ignore_save_file', False)
+    mark_processed = settings.get('mark_processed', False)
     processed_csv_path = os.path.join(csv_folder, 'backbeat_processed.csv')
     processed_entries = load_processed_csv(processed_csv_path)
     if selected_source != 'All':

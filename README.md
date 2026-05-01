@@ -1,76 +1,117 @@
 # BackBeat
 
-Batch-download and post-process YouTube music videos for use as **in-game backgrounds in rhythm games** (e.g. YARG).
+BackBeat batch-downloads and post-processes YouTube music videos for use as background videos in rhythm games such as YARG.
 
-> **Heads up — this can take a long time.**
-> The included `backbeat.csv` covers the full **Rock Band 1, 2, and 3** setlists — every song that has an official music video available. Expect several hours of download and encode time depending on your connection and hardware.
+It reads one or more CSV playlists, lets you choose what to process in a small Tkinter setup window, then downloads video-only sources with yt-dlp and converts them into game-friendly output files.
 
----
+## What BackBeat Does
 
-## A note on sync quality
+Given a CSV playlist, BackBeat can:
 
-I've done my best to sync each music video to its in-game version, but this is imperfect by nature — **music videos are often a different edit than the track on Rock Band** (different length intro, cut verses, alternate mix, etc.). The timing values in `backbeat.csv` are approximations, and I have **not manually tested every video in-game**.
+- download the selected YouTube video
+- strip audio so the output is video-only
+- optionally remove black bars with `cropdetect`
+- apply a start delay or a black pre-roll pad
+- apply playback speed correction
+- pad the final result to a 16:9 canvas without scaling the original image
+- encode to `webm` or `mp4`
+- skip rows that were already processed with identical CSV parameters
 
-In practice, many songs are adjusted to align on exact visual frames, and some speed corrections are extremely fine-grained (sometimes more precise than one-tenth of a percent).
+The included `backbeat.csv` covers a large Rock Band music-video set, so a full run can take a long time depending on connection speed and CPU performance.
 
-If you find any of the following, **please open an issue on GitHub** — corrections and improvements are very welcome:
+## Sync Accuracy
 
-- A better YouTube source for a video
-- A more accurate timing offset or speed value
-- A wrong video linked to the wrong song
-- Any other mistake or quality issue
+BackBeat's timing values are practical approximations, not guarantees. Official music videos often use different edits, mixes, intros, or lengths than the in-game stems they are meant to accompany.
 
-Given a simple CSV playlist, BackBeat downloads each video at your chosen quality, then automatically:
-
-- Detects and removes black bars (cropdetect)
-- Adjusts playback speed
-- Trims or pads the start with a black frame delay
-- Pads to a 16:9 frame with black bars when needed (preserves source resolution)
-- Encodes to MP4 or WEBM
-
----
+If you find a better source video, a more accurate delay or speed value, or an incorrect mapping, open an issue.
 
 ## Requirements
 
-- **Python 3.10+** (with Tkinter — included in the standard Windows installer)
-- **yt-dlp** and **ffmpeg** — downloaded automatically on first run if not found
+- Python 3.10 or newer
+- Tkinter available in your Python install
+- Windows is the primary supported workflow for automatic tool download
 
-If Python is not installed yet (Windows):
+BackBeat requires these external tools:
 
-1. Download Python from https://www.python.org/downloads/windows/
-2. Run the installer and enable **Add python.exe to PATH**
-3. Click **Install Now**
-4. Verify in a terminal:
-   ```
-   python --version
-   ```
+- `yt-dlp`
+- `ffmpeg`
+- `ffprobe`
 
-> On first launch, if yt-dlp or ffmpeg are missing, BackBeat will offer to download them into a local `bin/` folder beside the script. No admin rights required.
+If those tools are not found on `PATH` or in `./bin`, BackBeat offers to download them automatically into the local `bin/` folder on Windows. No admin rights are required.
 
----
+On some fresh Windows systems, yt-dlp may also benefit from an optional JavaScript runtime. BackBeat can offer to install `Deno` into `./bin` for that case.
 
-## Usage
+## Quick Start
 
-1. Run the script (optionally with your own CSV, or use the included `backbeat.csv`):
-   ```
-   python backbeat.py
-   ```
-   The included `backbeat.csv` contains all songs with official music videos from Rock Band 1, 2, and 3. To use your own playlist, create a new CSV in the same folder as `backbeat.py` (see [CSV Format](#csv-format) below).
+1. Install Python if needed.
+2. Put your CSV file in the same folder as `backbeat.py`, or use the included `backbeat.csv`.
+3. Run:
 
-2. A settings dialog will appear — choose your browser for cookies, quality, output format, and encode profile
+```bash
+python backbeat.py
+```
 
-3. A second dialog appears where you:
-   - Choose which **CSV file** in the script folder to use (all `.csv` files are listed; when you switch files, the `Source` list refreshes automatically)
-   - Select which **Source** to process (e.g. `RB1`, `RB2`, or `All`)
-   - See a **row count** showing how many songs are in the selected source and how many will actually be encoded (accounting for videos you've already processed)
-   - Optionally check **"Ignore save file"** to re-encode all songs regardless of prior history
-   - Optionally check **"Mark all as processed"** if you've already encoded these videos — this updates the cache without encoding anything
+4. If required tools are missing, allow BackBeat to download them.
+5. In the setup window, choose your encoding settings and CSV selection.
+6. Click `Start`.
 
-4. Click **Process** and let it run
+BackBeat writes output into subfolders named after the CSV `Source` value, such as `RB1/`, `RB2/`, or `Unknown_Source/`.
 
----
+## Setup Window
+
+Current versions use a single combined startup window called `BackBeat Setup`.
+
+The left side contains encoding settings:
+
+- `Browser cookies`
+- `Quality`
+- `Output format`
+- `WebM encode profile`
+
+The right side contains CSV selection controls:
+
+- `CSV file`
+- `Source`
+- `Ignore save file`
+- `Mark all as processed`
+- a live row count showing `X row(s) in source, Y to process`
+
+Hover tooltips are available on the labeled controls and checkboxes.
+
+### Encoding Settings
+
+| Setting | Description |
+|---|---|
+| `Browser cookies` | Lets yt-dlp borrow cookies from your browser session. Useful for age-restricted videos, members-only videos, and Premium-only higher bitrate streams. On Windows, BackBeat tries to preselect your default browser. |
+| `Quality` | `Best available`, `1080p max`, `720p max`, `480p max`, or `Smallest file`. |
+| `Output format` | `webm` or `mp4`. `webm` is the default and generally the preferred option for rhythm-game video backgrounds. |
+| `WebM encode profile` | Applies only to `webm`. `Auto` selects a profile by source height. Manual options are `Fast / Small`, `Medium / Medium`, and `Slow / Big`. |
+
+### WebM Profiles
+
+| Profile | CRF | Target Bitrate | Max Bitrate | CPU Used |
+|---|---:|---:|---:|---:|
+| `Fast / Small` | 10 | 4M | 6M | 4 |
+| `Medium / Medium` | 6 | 6M | 9M | 2 |
+| `Slow / Big` | 4 | 8M | 12M | 0 |
+
+When `Auto` is selected, BackBeat chooses:
+
+- `Fast / Small` for sources up to 480p
+- `Medium / Medium` for sources up to 1080p
+- `Slow / Big` for sources above 1080p
+
+## CSV Selection And Filtering
+
+BackBeat lists every `.csv` file in the script folder except `backbeat_processed.csv`. If `backbeat.csv` exists, it is listed first.
+
+`Source` filtering is case-insensitive when choosing what to process. `All` processes every matching row in the selected CSV.
+
+Rows with missing or invalid `Youtube` URLs are ignored entirely. They do not count toward the live row total and they are never processed.
 
 ## CSV Format
+
+Use this header layout:
 
 ```csv
 Source,Filename,Youtube,Delay,Speed,Remove Black Bar
@@ -80,103 +121,68 @@ RB2,another_song,https://youtu.be/...,500,98.5,no
 
 | Column | Description |
 |---|---|
-| `Source` | Group/setlist label used by the source filter dialog (e.g. `RB1`, `RB2`).|
-| `Filename` | Output filename (no extension needed, Unicode-safe) |
-| `Youtube` | Full YouTube URL |
-| `Delay` | Milliseconds to trim (`+`) or pad with black (`-`) at the start |
-| `Speed` | Playback speed as a percentage (e.g. `98.5` = slightly slower) |
-| `Remove Black Bar` | `yes` / `no` — whether to run cropdetect and remove letterboxing |
-
-`Source` matching is case-insensitive in the picker (`rb1` and `RB1` are treated the same).
-
-If you keep multiple playlists in the script folder, BackBeat will list all `.csv` files in the picker and load the selected one on demand.
-
----
+| `Source` | Group or setlist name used for filtering and output folders. |
+| `Filename` | Output file name without extension. Invalid filename characters are stripped automatically. |
+| `Youtube` | Full `http` or `https` URL to the source video. |
+| `Delay` | Milliseconds to adjust the start. Positive values trim from the start. Negative values add black video at the front. Blank is treated as `0`. |
+| `Speed` | Playback speed percentage. `100` means unchanged. Blank is treated as `100`. |
+| `Remove Black Bar` | Enables crop detection when set to `yes`, `true`, or `1`. |
 
 ## Processing Cache
 
-BackBeat creates a file called `backbeat_processed.csv` to track which videos have already been encoded. This prevents re-encoding the same video when you run the script multiple times.
+BackBeat stores prior successful rows in `backbeat_processed.csv`.
 
-### Row Count Display
+This cache is based on the CSV input row, not on the chosen startup settings. A row is considered the same if these CSV fields match:
 
-Before you click **Process**, the dialog shows:
-- **Total rows in source** — how many rows match your selected Source
-- **Rows to process** — how many of those will actually be encoded (excludes videos already in the cache)
+- `Source`
+- `Filename`
+- `Youtube`
+- `Remove Black Bar`
+- `Delay` with blank treated as `0`
+- `Speed` with blank treated as `100`
 
-The count updates automatically when you change the Source or toggle the **"Ignore save file"** checkbox.
+That means changing format, quality, browser cookies, or WebM profile does not invalidate the cache by itself. If you want to re-encode the same rows with new startup settings, use `Ignore save file`.
 
 ### Ignore Save File
 
-Check this box if you want to re-encode every video in the selection, even if it's already in the cache. Useful if you've changed your quality or encode settings and want to re-do previous runs.
+If checked, BackBeat processes all selected rows even if they already exist in `backbeat_processed.csv`.
 
-### Mark All as Processed
+### Mark All As Processed
 
-Use this if you've already encoded these videos manually or with another tool. When checked, the script adds all selected rows to the processed cache **without encoding anything**, then exits. On your next run, those rows will be skipped automatically.
+If checked, BackBeat adds all selected rows to `backbeat_processed.csv` without downloading or encoding anything, then exits.
 
-**Only use this if you know what you're doing.** If unsure, leave it off.
+Use this only when those rows were already handled elsewhere and you want future runs to skip them.
 
----
+## Output Behavior
 
-## Settings Dialog
+- output files are written to a folder named after `Source`
+- if `Source` is empty, output goes to `Unknown_Source/`
+- the output extension matches your chosen format: `webm` or `mp4`
+- audio is removed from the output
+- if no processing is needed for a row, BackBeat may simply rename the downloaded file into place
 
-| Setting | Notes |
-|---|---|
-| **Browser cookies** | Lets yt-dlp authenticate using your browser session. Unlocks age-restricted and members-only videos. If you have YouTube Premium, also grants access to higher-bitrate streams. Pick the browser you use for YouTube, or *None* to skip. |
-| **Quality** | Best available / 1080p max / 720p max / 480p max / Smallest file |
-| **Output format** | **WEBM** (VP8) — recommended for rhythm games, smaller files, slower encode. **MP4** (libx264) — fallback option if WEBM is not compatible with your use case; faster encode but larger files. |
-| **WebM encode profile** | *(Only applies to WEBM output format.)* **Auto** adjusts by source resolution. **Fast / Small** favors speed and smaller files. **Medium / Medium** balances speed and quality. **Slow / Big** favors highest quality and larger files. |
+At the end of the run, BackBeat prints a summary showing which rows succeeded, failed, or were skipped as already processed.
 
----
+## CON File Compatibility And Nautilus Naming
 
-## WebM Encode Profiles
-
-| Profile | Target Bitrate | Max Bitrate | Best For |
-|---|---|---|---|
-| **Fast / Small** | 4 Mbps | 6 Mbps | Quick encodes, small files, lower quality |
-| **Medium / Medium** | 6 Mbps | 9 Mbps | Balanced speed and quality (recommended) |
-| **Slow / Big** | 8 Mbps | 12 Mbps | Highest quality, larger files, slower encodes |
-
-When **Auto** is selected, profiles are chosen by source height:
-- **≤ 480p** → Fast / Small
-- **≤ 1080p** → Medium / Medium
-- **> 1080p** → Slow / Big
-
----
-
-## Output
-
-Encoded files are written beside the script in a subfolder named after the `Source` column value (e.g. `RB1/`, `RB2/`). If a row has no `Source` value, it goes into an `Unknown_Source/` folder.
-
----
-
-## CON file compatibility & Nautilus naming
-
-The output files are designed to drop directly into **CON-format song sets** with **no modification to `song.ini`** required.
-
-File names are generated to match the naming convention produced by the [Nautilus](https://github.com/trojannemo/Nautilus) batch rename tool (by trojannemo), using the **"The Artist - Song"** rename format:
+The generated filenames are intended to line up with CON-format song sets that were batch-renamed with Nautilus using the `The Artist - Song` style shown below:
 
 ![Nautilus batch rename settings](docs/nautilus-rename.png)
 
-Run your CON song folders through Nautilus with those settings first, then BackBeat's output files will match automatically.
+When using Nautilus, make sure `Ignore Xbox file system limitations` is enabled so long or Unicode-safe names are not truncated unexpectedly.
 
-> **Important:** Make sure **"Ignore Xbox file system limitations"** is enabled in Nautilus (visible in the screenshot above) — this allows long or Unicode filenames that would otherwise be truncated on Xbox storage.
+## Third-Party Tools
 
----
-
-## Third-party tools
-
-BackBeat downloads the following tools automatically into `./bin/` if they are not already on your PATH:
+BackBeat can download these tools into `./bin/` when needed:
 
 | Tool | License | Source |
 |---|---|---|
-| yt-dlp | The Unlicense (public domain) | https://github.com/yt-dlp/yt-dlp |
-| ffmpeg | GPL v2+ (BtbN full build) | https://github.com/BtbN/FFmpeg-Builds |
-| Deno (optional) | MIT | https://github.com/denoland/deno |
+| `yt-dlp` | The Unlicense | https://github.com/yt-dlp/yt-dlp |
+| `ffmpeg` | GPL v2+ | https://github.com/BtbN/FFmpeg-Builds |
+| `Deno` | MIT | https://github.com/denoland/deno |
 
-BackBeat itself is not affiliated with YARG or any rhythm game project.
+BackBeat itself is not affiliated with YARG, Rock Band, Nautilus, or any other rhythm-game project.
 
----
+## Project Note
 
-## About this project
-
-This tool was **vibe coded** — built through AI-assisted development. The author has some manual coding knowledge but this project leans heavily on that workflow. The time saved from rapid development was invested into building the included `backbeat.csv` dataset, which is a time-consuming task to manually curate and sync. Use it, fork it, improve it.
+This project was built with heavy AI assistance. Most of the saved effort went into curating and syncing the included CSV dataset, which is the time-consuming part of a project like this.
