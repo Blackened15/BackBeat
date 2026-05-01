@@ -43,7 +43,7 @@ On some fresh Windows systems, yt-dlp may also benefit from an optional JavaScri
 
 ## Quick Start
 
-1. Install Python if needed.
+1. Install Python if needed. Download it from https://www.python.org/downloads/ and make sure `Add python.exe to PATH` is enabled during setup.
 2. Put your CSV file in the same folder as `backbeat.py`, or use the included `backbeat.csv`.
 3. Run:
 
@@ -74,7 +74,10 @@ The right side contains CSV selection controls:
 - `Source`
 - `Ignore save file`
 - `Mark all as processed`
+- `Choose songs...`
 - a live row count showing `X row(s) in source, Y to process`
+
+`Choose songs...` opens a checkbox list built from the current CSV and Source selection. Only songs with valid URLs are shown. Songs already found in `backbeat_processed.csv` stay visible but start unchecked so you can manually re-run them.
 
 Hover tooltips are available on the labeled controls and checkboxes.
 

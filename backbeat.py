@@ -388,8 +388,10 @@ def open_startup_dialog(csv_folder):
     ignore_save_var = tk.BooleanVar(value=False)
     mark_processed_var = tk.BooleanVar(value=False)
     detail_var = tk.StringVar(value='')
+    selection_var = tk.StringVar(value='Manual picker not used. Matching songs already in the processed cache will be skipped.')
     result = {}
     current_rows = []
+    manual_selection_keys = None
     processed_csv_path = os.path.join(csv_folder, 'backbeat_processed.csv')
     processed_entries = load_processed_csv(processed_csv_path)
 
@@ -518,36 +520,44 @@ def open_startup_dialog(csv_folder):
     detail_lbl = ttk.Label(source_frame, textvariable=detail_var, foreground='gray')
     detail_lbl.grid(row=6, column=0, sticky='w', pady=(0, 4))
 
+    select_songs_button = ttk.Button(source_frame, text='Choose songs...', command=lambda: open_manual_song_picker())
+    select_songs_button.grid(row=7, column=0, sticky='w', pady=(4, 4))
+    _SELECT_SONGS_TIP = (
+        'Open a scrollable checklist of songs from the current CSV and Source.\n\n'
+        'Songs with valid URLs are shown. Already processed songs stay visible but start unchecked so you can re-run them manually.'
+    )
+    _Tooltip(select_songs_button, _SELECT_SONGS_TIP)
+
+    selection_lbl = ttk.Label(source_frame, textvariable=selection_var, foreground='gray', wraplength=360, justify='left')
+    selection_lbl.grid(row=8, column=0, sticky='w', pady=(0, 4))
+
+    def clear_manual_selection():
+        nonlocal manual_selection_keys
+        manual_selection_keys = None
+
     def update_detail_display():
         """Calculate and display how many songs will be processed."""
-        selected_source = source_var.get()
-        ignore_save = ignore_save_var.get()
-
-        filtered_rows = current_rows
-        if selected_source != 'All':
-            selected_source_folded = selected_source.casefold()
-            filtered_rows = [
-                row for row in current_rows
-                if row.get('Source', '').strip().casefold() == selected_source_folded
-            ]
-
-        filtered_rows = [row for row in filtered_rows if has_valid_video_url(row)]
-
-        to_process = 0
-        if ignore_save:
-            to_process = len(filtered_rows)
-        else:
-            for row in filtered_rows:
-                already_processed = False
-                for proc_entry in processed_entries:
-                    if row_matches_processed(row, proc_entry):
-                        already_processed = True
-                        break
-                if not already_processed:
-                    to_process += 1
-
+        filtered_rows = filter_rows_for_processing(current_rows, source_var.get())
         total = len(filtered_rows)
+
+        if manual_selection_keys is not None:
+            filtered_entries = build_song_selection_entries(filtered_rows, processed_entries)
+            selected_count = sum(
+                1 for entry in filtered_entries
+                if entry['key'] in manual_selection_keys
+            )
+            detail_var.set(f'{total} row(s) in source, {selected_count} selected manually')
+            selection_var.set('Manual picker active. Checked songs will run even if they already exist in the processed cache.')
+            return
+
+        if ignore_save_var.get():
+            detail_var.set(f'{total} row(s) in source, {total} to process')
+            selection_var.set('Manual picker not used. All matching songs will run because Ignore save file is enabled.')
+            return
+
+        to_process = sum(1 for row in filtered_rows if not is_row_processed(row, processed_entries))
         detail_var.set(f'{total} row(s) in source, {to_process} to process')
+        selection_var.set('Manual picker not used. Matching songs already in the processed cache will be skipped.')
 
     def refresh_sources(_event=None):
         nonlocal current_rows
@@ -560,7 +570,9 @@ def open_startup_dialog(csv_folder):
             current_rows = []
             source_box.configure(values=['All'])
             source_var.set('All')
+            clear_manual_selection()
             detail_var.set(f'Could not read {csv_name}: {exc}')
+            selection_var.set('Manual picker unavailable until the CSV loads successfully.')
             return
 
         source_values = _unique_csv_values(current_rows, 'Source')
@@ -569,6 +581,25 @@ def open_startup_dialog(csv_folder):
         if source_var.get() not in options:
             source_var.set('All')
 
+        clear_manual_selection()
+        update_detail_display()
+
+    def open_manual_song_picker():
+        nonlocal manual_selection_keys
+        filtered_rows = filter_rows_for_processing(current_rows, source_var.get())
+        if not filtered_rows:
+            _mb.showinfo(
+                'No songs available',
+                'No songs with valid URLs match the current CSV and Source selection.',
+                parent=root,
+            )
+            return
+
+        selected_keys = open_song_selection_dialog(root, filtered_rows, processed_entries, manual_selection_keys)
+        if selected_keys is None:
+            return
+
+        manual_selection_keys = selected_keys
         update_detail_display()
 
     def submit():
@@ -585,6 +616,16 @@ def open_startup_dialog(csv_folder):
         result['rows'] = current_rows
         result['ignore_save_file'] = ignore_save_var.get()
         result['mark_processed'] = mark_processed_var.get()
+        result['manual_song_selection'] = manual_selection_keys is not None
+        if manual_selection_keys is not None:
+            filtered_rows = filter_rows_for_processing(current_rows, source_var.get())
+            filtered_entries = build_song_selection_entries(filtered_rows, processed_entries)
+            result['selected_rows'] = [
+                entry['row'] for entry in filtered_entries
+                if entry['key'] in manual_selection_keys
+            ]
+        else:
+            result['selected_rows'] = None
         root.destroy()
 
     def cancel():
@@ -602,10 +643,14 @@ def open_startup_dialog(csv_folder):
     frame.columnconfigure(1, weight=1)
     root.columnconfigure(0, weight=1)
     root.protocol('WM_DELETE_WINDOW', cancel)
+    def on_source_change(*_args):
+        clear_manual_selection()
+        update_detail_display()
+
     root.bind('<Return>', lambda _event: submit())
     root.bind('<Escape>', lambda _event: cancel())
     csv_box.bind('<<ComboboxSelected>>', refresh_sources)
-    source_var.trace_add('write', lambda *args: update_detail_display())
+    source_var.trace_add('write', on_source_change)
     ignore_save_var.trace_add('write', lambda *args: update_detail_display())
     refresh_sources()
     browser_box.focus_set()
@@ -690,6 +735,364 @@ def has_valid_video_url(row):
     except Exception:
         return False
     return parsed.scheme in ('http', 'https') and bool(parsed.netloc)
+
+
+def filter_rows_for_processing(rows, selected_source):
+    """Return rows matching the selected source with valid URLs only."""
+    filtered_rows = rows
+    if selected_source != 'All':
+        selected_source_folded = selected_source.casefold()
+        filtered_rows = [
+            row for row in rows
+            if row.get('Source', '').strip().casefold() == selected_source_folded
+        ]
+    return [row for row in filtered_rows if has_valid_video_url(row)]
+
+
+def is_row_processed(row, processed_entries):
+    """Return True when the input row already exists in the processed cache."""
+    for proc_entry in processed_entries:
+        if row_matches_processed(row, proc_entry):
+            return True
+    return False
+
+
+def is_row_identity_matched(row, processed_entries):
+    """Return True when a processed entry shares the same Filename and Youtube URL,
+    even if other parameters (Delay, Speed, Remove Black Bar) differ."""
+    filename = row.get('Filename', '').strip().casefold()
+    youtube = row.get('Youtube', '').strip().casefold()
+    for proc_entry in processed_entries:
+        if (proc_entry.get('Filename', '').strip().casefold() == filename
+                and proc_entry.get('Youtube', '').strip().casefold() == youtube):
+            return True
+    return False
+
+
+def find_row_identity_match(row, processed_entries):
+    """Return the first processed entry matching Filename+Youtube identity."""
+    filename = row.get('Filename', '').strip().casefold()
+    youtube = row.get('Youtube', '').strip().casefold()
+    for proc_entry in processed_entries:
+        if (proc_entry.get('Filename', '').strip().casefold() == filename
+                and proc_entry.get('Youtube', '').strip().casefold() == youtube):
+            return proc_entry
+    return None
+
+
+def make_row_selection_key(index, row):
+    """Build a stable key for a row within the current filtered list."""
+    return (
+        index,
+        row.get('Source', '').strip(),
+        row.get('Filename', '').strip(),
+        row.get('Youtube', '').strip(),
+        row.get('Delay', '').strip(),
+        row.get('Speed', '').strip(),
+        row.get('Remove Black Bar', '').strip(),
+    )
+
+
+def build_song_selection_entries(rows, processed_entries):
+    """Build selection metadata for the manual song picker."""
+
+    def norm_delay(val):
+        v = val.strip()
+        return '0' if v == '' else v
+
+    def norm_speed(val):
+        v = val.strip()
+        return '100' if v == '' else v
+
+    def norm_crop(val):
+        return '1' if val.strip().upper() in ('TRUE', '1', 'YES') else '0'
+
+    entries = []
+    for index, row in enumerate(rows):
+        updated_columns = set()
+        if is_row_processed(row, processed_entries):
+            status = 'already processed'
+        elif is_row_identity_matched(row, processed_entries):
+            status = 'update available'
+            proc_entry = find_row_identity_match(row, processed_entries)
+            if proc_entry:
+                if row.get('Source', '').strip() != proc_entry.get('Source', '').strip():
+                    updated_columns.add('source')
+                if norm_delay(row.get('Delay', '')) != norm_delay(proc_entry.get('Delay', '')):
+                    updated_columns.add('delay')
+                if norm_speed(row.get('Speed', '')) != norm_speed(proc_entry.get('Speed', '')):
+                    updated_columns.add('speed')
+                if norm_crop(row.get('Remove Black Bar', '')) != norm_crop(proc_entry.get('Remove Black Bar', '')):
+                    updated_columns.add('crop')
+        else:
+            status = 'new'
+        entries.append({
+            'key': make_row_selection_key(index, row),
+            'row': row,
+            'status': status,
+            'processed': status == 'already processed',
+            'updated_columns': updated_columns,
+        })
+    return entries
+
+
+def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=None):
+    """Open a table dialog for manually selecting songs."""
+    entries = build_song_selection_entries(rows, processed_entries)
+    if selected_keys is None:
+        selected_key_set = {entry['key'] for entry in entries if entry['status'] != 'already processed'}
+    else:
+        selected_key_set = set(selected_keys)
+
+    result = {'selected_keys': None}
+    win = tk.Toplevel(parent)
+    win.title('Select Songs To Process')
+    win.transient(parent)
+    win.resizable(True, True)
+    win.geometry('1020x560')
+
+    outer = ttk.Frame(win, padding=14)
+    outer.grid(row=0, column=0, sticky='nsew')
+
+    ttk.Label(
+        outer,
+        text='Click a row to toggle selection. Already processed songs start unchecked.',
+        wraplength=960,
+        justify='left',
+    ).grid(row=0, column=0, sticky='w', pady=(0, 8))
+
+    ttk.Label(
+        outer,
+        text=(
+            'Legend: new = not in processed cache, update available = same song with changed settings, '
+            'already processed = identical cached settings. Values wrapped in *...* are changed.'
+        ),
+        foreground='gray',
+        wraplength=960,
+        justify='left',
+    ).grid(row=1, column=0, sticky='w', pady=(0, 8))
+
+    selection_count_var = tk.StringVar(value='')
+    control_frame = ttk.Frame(outer)
+    control_frame.grid(row=2, column=0, sticky='ew', pady=(0, 8))
+
+    # --- Treeview table ---
+    tree_frame = ttk.Frame(outer)
+    tree_frame.grid(row=3, column=0, sticky='nsew')
+    columns = ('selected', 'status', 'filename', 'source', 'delay', 'speed', 'crop')
+    tree = ttk.Treeview(tree_frame, columns=columns, show='headings', selectmode='none')
+    vsb = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
+    tree.configure(yscrollcommand=vsb.set)
+    tree.grid(row=0, column=0, sticky='nsew')
+    vsb.grid(row=0, column=1, sticky='ns')
+    tree_frame.columnconfigure(0, weight=1)
+    tree_frame.rowconfigure(0, weight=1)
+
+    heading_labels = {
+        'selected': 'Selected',
+        'status': 'Status',
+        'filename': 'Filename',
+        'source': 'Source',
+        'delay': 'Delay',
+        'speed': 'Speed',
+        'crop': 'Crop Bars',
+    }
+
+    tree.column('selected', width=86,  minwidth=72,  stretch=False, anchor='center')
+    tree.column('status',   width=150, minwidth=120, stretch=False, anchor='w')
+    tree.column('filename', width=320, minwidth=120, stretch=True,  anchor='w')
+    tree.column('source',   width=120, minwidth=80,  stretch=False, anchor='w')
+    tree.column('delay',    width=72,  minwidth=60,  stretch=False, anchor='center')
+    tree.column('speed',    width=72,  minwidth=60,  stretch=False, anchor='center')
+    tree.column('crop',     width=80,  minwidth=60,  stretch=False, anchor='center')
+
+    selected_states = {entry['key']: (entry['key'] in selected_key_set) for entry in entries}
+    item_to_key = {}       # treeview iid -> key
+    key_to_item = {}       # key -> treeview iid
+    entry_by_key = {e['key']: e for e in entries}
+    status_rank = {'new': 0, 'update available': 1, 'already processed': 2}
+    current_filter = 'all'
+    filter_var = tk.StringVar(value='all')
+    current_sort_col = 'status'
+    current_sort_reverse = False
+
+    def _selection_mark(selected):
+        return '\u2611' if selected else '\u2610'  # ☑ / ☐
+
+    def _star_if_updated(text, updated):
+        return f'*{text}*' if updated else text
+
+    def _entry_display_values(entry):
+        row = entry['row']
+        updated_columns = entry.get('updated_columns', set())
+        delay_raw = row.get('Delay', '').strip()
+        speed_raw = row.get('Speed', '').strip()
+        remove_bars = row.get('Remove Black Bar', '').strip().upper() in ('TRUE', '1', 'YES')
+
+        delay_display = f'{delay_raw} ms' if delay_raw and delay_raw != '0' else '\u2014'
+        speed_display = f'{speed_raw}%' if speed_raw and speed_raw != '100' else '\u2014'
+        crop_display = 'Yes' if remove_bars else 'No'
+        filename_display = output_basename(row.get('Filename', '')) or '<missing>'
+        source_display = row.get('Source', '').strip() or '\u2014'
+
+        return (
+            _selection_mark(selected_states[entry['key']]),
+            entry['status'],
+            filename_display,
+            _star_if_updated(source_display, 'source' in updated_columns),
+            _star_if_updated(delay_display, 'delay' in updated_columns),
+            _star_if_updated(speed_display, 'speed' in updated_columns),
+            _star_if_updated(crop_display, 'crop' in updated_columns),
+        )
+
+    def _sort_key(entry, col):
+        row = entry['row']
+        if col == 'selected':
+            return selected_states[entry['key']]
+        if col == 'status':
+            return status_rank.get(entry['status'], 99)
+        if col == 'filename':
+            return (output_basename(row.get('Filename', '')) or '').casefold()
+        if col == 'source':
+            return row.get('Source', '').strip().casefold()
+        if col == 'delay':
+            delay_raw = row.get('Delay', '').strip()
+            return int(delay_raw) if delay_raw else 0
+        if col == 'speed':
+            speed_raw = row.get('Speed', '').strip()
+            return float(speed_raw) if speed_raw else 100.0
+        if col == 'crop':
+            return row.get('Remove Black Bar', '').strip().upper() in ('TRUE', '1', 'YES')
+        return ''
+
+    def _iter_filtered_sorted_entries():
+        visible = []
+        for entry in entries:
+            status = entry['status']
+            if current_filter == 'all':
+                visible.append(entry)
+            elif current_filter == 'new' and status == 'new':
+                visible.append(entry)
+            elif current_filter == 'updates' and status == 'update available':
+                visible.append(entry)
+            elif current_filter == 'processed' and status == 'already processed':
+                visible.append(entry)
+        visible.sort(key=lambda e: _sort_key(e, current_sort_col), reverse=current_sort_reverse)
+        return visible
+
+    def _refresh_headings():
+        arrow = '\u25bc' if current_sort_reverse else '\u25b2'
+        for col in columns:
+            title = heading_labels[col]
+            if col == current_sort_col:
+                title = f'{title} {arrow}'
+            tree.heading(col, text=title, command=lambda c=col: on_sort_column(c))
+
+    def _render_rows():
+        item_to_key.clear()
+        key_to_item.clear()
+        for iid in tree.get_children():
+            tree.delete(iid)
+        for entry in _iter_filtered_sorted_entries():
+            iid = tree.insert('', 'end', values=_entry_display_values(entry))
+            item_to_key[iid] = entry['key']
+            key_to_item[entry['key']] = iid
+        update_selection_count()
+
+    def on_sort_column(col):
+        nonlocal current_sort_col, current_sort_reverse
+        if current_sort_col == col:
+            current_sort_reverse = not current_sort_reverse
+        else:
+            current_sort_col = col
+            current_sort_reverse = False
+        _refresh_headings()
+        _render_rows()
+
+    def set_filter(mode):
+        nonlocal current_filter
+        current_filter = mode
+        _render_rows()
+
+    def on_filter_change(*_args):
+        set_filter(filter_var.get())
+
+    def _refresh_row(key):
+        iid = key_to_item.get(key)
+        if not iid:
+            return
+        entry = entry_by_key[key]
+        tree.item(iid, values=_entry_display_values(entry))
+
+    def update_selection_count():
+        n = sum(1 for v in selected_states.values() if v)
+        shown = len(tree.get_children())
+        selection_count_var.set(f'{n} of {len(entries)} song(s) selected ({shown} shown)')
+
+    def on_tree_click(event):
+        region = tree.identify('region', event.x, event.y)
+        if region != 'cell':
+            return
+        iid = tree.identify_row(event.y)
+        if iid and iid in item_to_key:
+            key = item_to_key[iid]
+            selected_states[key] = not selected_states[key]
+            _refresh_row(key)
+            update_selection_count()
+
+    tree.bind('<Button-1>', on_tree_click)
+
+    def apply_selection_to_all(value):
+        for key in selected_states:
+            selected_states[key] = value
+            _refresh_row(key)
+        update_selection_count()
+
+    def select_unprocessed_only():
+        for entry in entries:
+            key = entry['key']
+            selected_states[key] = entry['status'] != 'already processed'
+            _refresh_row(key)
+        update_selection_count()
+
+    ttk.Label(control_frame, textvariable=selection_count_var).grid(row=0, column=0, sticky='w')
+    ttk.Button(control_frame, text='Select all', command=lambda: apply_selection_to_all(True)).grid(row=0, column=1, padx=(12, 6))
+    ttk.Button(control_frame, text='Select unprocessed', command=select_unprocessed_only).grid(row=0, column=2, padx=6)
+    ttk.Button(control_frame, text='Clear all', command=lambda: apply_selection_to_all(False)).grid(row=0, column=3, padx=(6, 0))
+
+    filter_frame = ttk.Frame(control_frame)
+    filter_frame.grid(row=1, column=0, columnspan=4, sticky='w', pady=(8, 0))
+    ttk.Label(filter_frame, text='Show:').grid(row=0, column=0, sticky='w')
+    ttk.Radiobutton(filter_frame, text='All', variable=filter_var, value='all').grid(row=0, column=1, padx=(8, 4))
+    ttk.Radiobutton(filter_frame, text='New', variable=filter_var, value='new').grid(row=0, column=2, padx=4)
+    ttk.Radiobutton(filter_frame, text='Updates', variable=filter_var, value='updates').grid(row=0, column=3, padx=4)
+    ttk.Radiobutton(filter_frame, text='Processed', variable=filter_var, value='processed').grid(row=0, column=4, padx=4)
+    control_frame.columnconfigure(0, weight=1)
+
+    filter_var.trace_add('write', on_filter_change)
+    _refresh_headings()
+    _render_rows()
+
+    def submit():
+        result['selected_keys'] = {key for key, sel in selected_states.items() if sel}
+        win.destroy()
+
+    def cancel():
+        win.destroy()
+
+    button_frame = ttk.Frame(outer)
+    button_frame.grid(row=4, column=0, sticky='e', pady=(12, 0))
+    ttk.Button(button_frame, text='Apply',  command=submit).grid(row=0, column=0, padx=(0, 8))
+    ttk.Button(button_frame, text='Cancel', command=cancel).grid(row=0, column=1)
+
+    outer.columnconfigure(0, weight=1)
+    outer.rowconfigure(3, weight=1)
+    win.columnconfigure(0, weight=1)
+    win.rowconfigure(0, weight=1)
+    win.protocol('WM_DELETE_WINDOW', cancel)
+    win.grab_set()
+    win.wait_window()
+    return result['selected_keys']
 
 
 def resolve_webm_profile(width, height):
@@ -972,17 +1375,13 @@ def main():
     selected_source = settings['source']
     ignore_save_file = settings.get('ignore_save_file', False)
     mark_processed = settings.get('mark_processed', False)
+    manual_song_selection = settings.get('manual_song_selection', False)
     processed_csv_path = os.path.join(csv_folder, 'backbeat_processed.csv')
     processed_entries = load_processed_csv(processed_csv_path)
-    if selected_source != 'All':
-        selected_source_folded = selected_source.casefold()
-        rows = [
-            row for row in rows
-            if row.get('Source', '').strip().casefold() == selected_source_folded
-        ]
-
-    # Ignore rows with missing/invalid URLs so they do not count or process.
-    rows = [row for row in rows if has_valid_video_url(row)]
+    if manual_song_selection:
+        rows = settings.get('selected_rows') or []
+    else:
+        rows = filter_rows_for_processing(rows, selected_source)
 
     # If mark_processed flag is set, add all rows to processed cache and exit
     if mark_processed:
@@ -1008,7 +1407,10 @@ def main():
     )
 
     if total == 0:
-        print(f'No rows matched source "{selected_source}".')
+        if manual_song_selection:
+            print('No songs were selected for processing.')
+        else:
+            print(f'No rows matched source "{selected_source}".')
         input('Press Enter to close...')
         sys.exit(0)
 
@@ -1031,8 +1433,8 @@ def main():
         speed_pct   = float(speed_raw) if speed_raw  else 100.0
         remove_bars = bar_raw in ('TRUE', '1', 'YES')
 
-        # Check if already processed (unless ignore flag is set)
-        if not ignore_save_file:
+        # Manual song selection is an explicit override, so selected rows should run even if cached.
+        if not ignore_save_file and not manual_song_selection:
             already_processed = False
             for proc_entry in processed_entries:
                 if row_matches_processed(row, proc_entry):
