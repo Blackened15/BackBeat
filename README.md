@@ -84,6 +84,7 @@ The picker includes these columns:
 - `Selected` (checkbox marker)
 - `Status`
 - `Filename`
+- `Notes`
 - `Link` (click to open the `Youtube` URL)
 - `Source`
 - `Delay`
@@ -102,6 +103,8 @@ Default checkbox behavior:
 - `already processed` starts unchecked
 
 When a song is `update available`, changed values are wrapped as `*value*` in the affected columns (`Link`, `Delay`, `Speed`, `Crop Bars`).
+
+`Notes` is displayed for convenience in the picker, but it is not used when determining whether a row matches the processed cache.
 
 Picker controls include:
 
