@@ -700,18 +700,20 @@ def load_processed_csv(processed_path):
     except Exception:
         return []
 
+
+def to_processed_cache_row(row):
+    """Normalize an input row to the processed cache schema."""
+    return {field: row.get(field, '') for field in PROCESSED_CACHE_FIELDS}
+
 def save_processed_csv(processed_path, rows):
     """Write processed entries to CSV."""
     if not rows:
         return
 
-    def normalize_processed_cache_row(row):
-        return {field: row.get(field, '') for field in PROCESSED_CACHE_FIELDS}
-
     with open(processed_path, 'w', newline='', encoding='utf-8-sig') as f:
         writer = csv.DictWriter(f, fieldnames=list(PROCESSED_CACHE_FIELDS))
         writer.writeheader()
-        writer.writerows(normalize_processed_cache_row(row) for row in rows)
+        writer.writerows(to_processed_cache_row(row) for row in rows)
 
 def row_matches_processed(input_row, processed_row):
     """Check if input row and processed row are identical for all input columns."""
@@ -790,6 +792,17 @@ def find_row_identity_match(row, processed_entries):
                 and proc_entry.get('Filename', '').strip().casefold() == filename):
             return proc_entry
     return None
+
+
+def upsert_processed_entry(row, processed_entries):
+    """Insert row into processed cache, replacing existing identity match when present."""
+    normalized = to_processed_cache_row(row)
+    existing = find_row_identity_match(row, processed_entries)
+    if existing is None:
+        processed_entries.append(normalized)
+        return 'added'
+    existing.update(normalized)
+    return 'updated'
 
 
 def make_row_selection_key(index, row):
@@ -1452,17 +1465,19 @@ def main():
 
     # If mark_processed flag is set, add all rows to processed cache and exit
     if mark_processed:
+        added_count = 0
+        updated_count = 0
         for row in rows:
-            # Only add if not already present
-            found = False
-            for proc_entry in processed_entries:
-                if row_matches_processed(row, proc_entry):
-                    found = True
-                    break
-            if not found:
-                processed_entries.append({field: row.get(field, '') for field in PROCESSED_CACHE_FIELDS})
+            result = upsert_processed_entry(row, processed_entries)
+            if result == 'added':
+                added_count += 1
+            else:
+                updated_count += 1
         save_processed_csv(processed_csv_path, processed_entries)
-        print(f'\033[1;92m✓ Added {len(rows)} row(s) to processed cache\033[0m')
+        print(
+            f'\033[1;92m✓ Processed cache updated: '
+            f'{added_count} added, {updated_count} overwritten\033[0m'
+        )
         input('Press Enter to close...')
         sys.exit(0)
 
@@ -1531,16 +1546,7 @@ def main():
 
         # Update processed CSV if encoding was successful
         if ok:
-            # Check if this row already exists in processed_entries and update it
-            found = False
-            for proc_entry in processed_entries:
-                if row_matches_processed(row, proc_entry):
-                    # Already in the list with same params, no change needed
-                    found = True
-                    break
-            if not found:
-                # Add new entry to processed list
-                processed_entries.append({field: row.get(field, '') for field in PROCESSED_CACHE_FIELDS})
+            upsert_processed_entry(row, processed_entries)
 
     # Save processed entries CSV
     save_processed_csv(processed_csv_path, processed_entries)
