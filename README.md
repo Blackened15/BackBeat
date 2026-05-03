@@ -214,7 +214,7 @@ At the end of the run, BackBeat prints a summary showing which rows succeeded, f
 
 ## CON File Compatibility And Nautilus Naming
 
-The generated filenames are intended to line up with CON-format song sets that were batch-renamed with Nautilus using the `The Artist - Song` style shown below:
+The generated filenames are intended to line up with CON-format song sets that were batch-renamed with [Nautilus](https://github.com/trojannemo/Nautilus) using the `The Artist - Song` style shown below:
 
 ![Nautilus batch rename settings](docs/nautilus-rename.png)
 
@@ -229,6 +229,7 @@ BackBeat can download these tools into `./bin/` when needed:
 | `yt-dlp` | The Unlicense | https://github.com/yt-dlp/yt-dlp |
 | `ffmpeg` | GPL v2+ | https://github.com/BtbN/FFmpeg-Builds |
 | `Deno` | MIT | https://github.com/denoland/deno |
+| `Nautilus` | Unknown / project-defined | https://github.com/trojannemo/Nautilus |
 
 BackBeat itself is not affiliated with YARG, Rock Band, Nautilus, or any other rhythm-game project.
 
