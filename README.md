@@ -229,7 +229,7 @@ BackBeat can download these tools into `./bin/` when needed:
 | `yt-dlp` | The Unlicense | https://github.com/yt-dlp/yt-dlp |
 | `ffmpeg` | GPL v2+ | https://github.com/BtbN/FFmpeg-Builds |
 | `Deno` | MIT | https://github.com/denoland/deno |
-| `Nautilus` | Unknown / project-defined | https://github.com/trojannemo/Nautilus |
+| `Nautilus` | MIT | https://github.com/trojannemo/Nautilus |
 
 BackBeat itself is not affiliated with YARG, Rock Band, Nautilus, or any other rhythm-game project.
 
