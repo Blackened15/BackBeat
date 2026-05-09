@@ -36,6 +36,7 @@ backbeat_processed.csv
 
 # Excel working files
 *.xlsx
+*.xlsm
 
 # Optional: keep local editor settings out of repo
 .vscode/
