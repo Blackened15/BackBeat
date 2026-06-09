@@ -534,7 +534,8 @@ def open_startup_dialog(csv_folder):
     select_songs_button.grid(row=7, column=0, sticky='w', pady=(4, 4))
     _SELECT_SONGS_TIP = (
         'Open a scrollable checklist of songs from the current CSV and Source.\n\n'
-        'Songs with valid URLs are shown. Already processed songs stay visible but start unchecked so you can re-run them manually.'
+        'Songs with valid URLs are shown. Rows with blank Delay+Speed appear as ignored. '
+        'Already processed and ignored songs start unchecked.'
     )
     _Tooltip(select_songs_button, _SELECT_SONGS_TIP)
 
@@ -549,6 +550,15 @@ def open_startup_dialog(csv_folder):
         """Calculate and display how many songs will be processed."""
         filtered_rows = filter_rows_for_processing(current_rows, source_var.get())
         total = len(filtered_rows)
+        ignored_blank_timing = count_rows_ignored_for_blank_timing(current_rows, source_var.get())
+
+        def make_detail_text(process_count):
+            if ignored_blank_timing:
+                return (
+                    f'{total} row(s) in source, {process_count} to process '
+                    f'({ignored_blank_timing} ignored: blank delay+speed)'
+                )
+            return f'{total} row(s) in source, {process_count} to process'
 
         if manual_selection_keys is not None:
             filtered_entries = build_song_selection_entries(filtered_rows, processed_entries)
@@ -556,17 +566,23 @@ def open_startup_dialog(csv_folder):
                 1 for entry in filtered_entries
                 if entry['key'] in manual_selection_keys
             )
-            detail_var.set(f'{total} row(s) in source, {selected_count} selected manually')
-            selection_var.set('Manual picker active. Checked songs will run even if they already exist in the processed cache.')
+            if ignored_blank_timing:
+                detail_var.set(
+                    f'{total} row(s) in source, {selected_count} selected manually '
+                    f'({ignored_blank_timing} ignored: blank delay+speed)'
+                )
+            else:
+                detail_var.set(f'{total} row(s) in source, {selected_count} selected manually')
+            selection_var.set('Manual picker active. Checked songs will run even if already processed; ignored rows (blank Delay+Speed) still will not run.')
             return
 
         if ignore_save_var.get():
-            detail_var.set(f'{total} row(s) in source, {total} to process')
+            detail_var.set(make_detail_text(total))
             selection_var.set('Manual picker not used. All matching songs will run because Ignore save file is enabled.')
             return
 
         to_process = sum(1 for row in filtered_rows if not is_row_processed(row, processed_entries))
-        detail_var.set(f'{total} row(s) in source, {to_process} to process')
+        detail_var.set(make_detail_text(to_process))
         selection_var.set('Manual picker not used. Matching songs already in the processed cache will be skipped.')
 
     def refresh_sources(_event=None):
@@ -596,8 +612,8 @@ def open_startup_dialog(csv_folder):
 
     def open_manual_song_picker():
         nonlocal manual_selection_keys
-        filtered_rows = filter_rows_for_processing(current_rows, source_var.get())
-        if not filtered_rows:
+        picker_rows = filter_rows_for_picker(current_rows, source_var.get())
+        if not picker_rows:
             _mb.showinfo(
                 'No songs available',
                 'No songs with valid URLs match the current CSV and Source selection.',
@@ -605,7 +621,7 @@ def open_startup_dialog(csv_folder):
             )
             return
 
-        selected_keys = open_song_selection_dialog(root, filtered_rows, processed_entries, manual_selection_keys)
+        selected_keys = open_song_selection_dialog(root, picker_rows, processed_entries, manual_selection_keys)
         if selected_keys is None:
             return
 
@@ -628,8 +644,8 @@ def open_startup_dialog(csv_folder):
         result['mark_processed'] = mark_processed_var.get()
         result['manual_song_selection'] = manual_selection_keys is not None
         if manual_selection_keys is not None:
-            filtered_rows = filter_rows_for_processing(current_rows, source_var.get())
-            filtered_entries = build_song_selection_entries(filtered_rows, processed_entries)
+            picker_rows = filter_rows_for_picker(current_rows, source_var.get())
+            filtered_entries = build_song_selection_entries(picker_rows, processed_entries)
             result['selected_rows'] = [
                 entry['row'] for entry in filtered_entries
                 if entry['key'] in manual_selection_keys
@@ -751,8 +767,30 @@ def has_valid_video_url(row):
     return parsed.scheme in ('http', 'https') and bool(parsed.netloc)
 
 
+def has_blank_delay_and_speed(row):
+    """Return True when both timing fields are blank (not 0/100)."""
+    delay_raw = row.get('Delay', '').strip()
+    speed_raw = row.get('Speed', '').strip()
+    return delay_raw == '' and speed_raw == ''
+
+
 def filter_rows_for_processing(rows, selected_source):
-    """Return rows matching the selected source with valid URLs only."""
+    """Return rows matching source, with valid URLs and explicit timing values."""
+    filtered_rows = rows
+    if selected_source != 'All':
+        selected_source_folded = selected_source.casefold()
+        filtered_rows = [
+            row for row in rows
+            if row.get('Source', '').strip().casefold() == selected_source_folded
+        ]
+    return [
+        row for row in filtered_rows
+        if has_valid_video_url(row) and not has_blank_delay_and_speed(row)
+    ]
+
+
+def filter_rows_for_picker(rows, selected_source):
+    """Return rows matching source with valid URLs, including ignored timing-blank rows."""
     filtered_rows = rows
     if selected_source != 'All':
         selected_source_folded = selected_source.casefold()
@@ -761,6 +799,23 @@ def filter_rows_for_processing(rows, selected_source):
             if row.get('Source', '').strip().casefold() == selected_source_folded
         ]
     return [row for row in filtered_rows if has_valid_video_url(row)]
+
+
+def count_rows_ignored_for_blank_timing(rows, selected_source):
+    """Count rows with valid URLs skipped because Delay and Speed are both blank."""
+    filtered_rows = rows
+    if selected_source != 'All':
+        selected_source_folded = selected_source.casefold()
+        filtered_rows = [
+            row for row in rows
+            if row.get('Source', '').strip().casefold() == selected_source_folded
+        ]
+
+    return sum(
+        1
+        for row in filtered_rows
+        if has_valid_video_url(row) and has_blank_delay_and_speed(row)
+    )
 
 
 def is_row_processed(row, processed_entries):
@@ -835,7 +890,9 @@ def build_song_selection_entries(rows, processed_entries):
     entries = []
     for index, row in enumerate(rows):
         updated_columns = set()
-        if is_row_processed(row, processed_entries):
+        if has_blank_delay_and_speed(row):
+            status = 'ignored'
+        elif is_row_processed(row, processed_entries):
             status = 'already processed'
         elif is_row_identity_matched(row, processed_entries):
             status = 'update available'
@@ -867,7 +924,10 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
     """Open a table dialog for manually selecting songs."""
     entries = build_song_selection_entries(rows, processed_entries)
     if selected_keys is None:
-        selected_key_set = {entry['key'] for entry in entries if entry['status'] != 'already processed'}
+        selected_key_set = {
+            entry['key'] for entry in entries
+            if entry['status'] not in ('already processed', 'ignored')
+        }
     else:
         selected_key_set = set(selected_keys)
 
@@ -883,7 +943,7 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
 
     ttk.Label(
         outer,
-        text='Click a row to toggle selection. Already processed songs start unchecked.',
+        text='Click a row to toggle selection. Already processed and ignored songs start unchecked.',
         wraplength=960,
         justify='left',
     ).grid(row=0, column=0, sticky='w', pady=(0, 8))
@@ -892,7 +952,8 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
         outer,
         text=(
             'Legend: new = not in processed cache, update available = same song with changed settings, '
-            'already processed = identical cached settings. Values wrapped in *...* are changed.'
+            'already processed = identical cached settings, ignored = valid URL but blank Delay+Speed. '
+            'Values wrapped in *...* are changed.'
         ),
         foreground='gray',
         wraplength=960,
@@ -941,7 +1002,7 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
     item_to_key = {}       # treeview iid -> key
     key_to_item = {}       # key -> treeview iid
     entry_by_key = {e['key']: e for e in entries}
-    status_rank = {'new': 0, 'update available': 1, 'already processed': 2}
+    status_rank = {'new': 0, 'update available': 1, 'already processed': 2, 'ignored': 3}
     current_filter = 'all'
     filter_var = tk.StringVar(value='all')
     current_sort_col = 'status'
@@ -1015,6 +1076,8 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
             elif current_filter == 'updates' and status == 'update available':
                 visible.append(entry)
             elif current_filter == 'processed' and status == 'already processed':
+                visible.append(entry)
+            elif current_filter == 'ignored' and status == 'ignored':
                 visible.append(entry)
         visible.sort(key=lambda e: _sort_key(e, current_sort_col), reverse=current_sort_reverse)
         return visible
@@ -1131,7 +1194,7 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
     def select_unprocessed_only():
         for entry in entries:
             key = entry['key']
-            selected_states[key] = entry['status'] != 'already processed'
+            selected_states[key] = entry['status'] in ('new', 'update available')
             _refresh_row(key)
         update_selection_count()
 
@@ -1147,6 +1210,7 @@ def open_song_selection_dialog(parent, rows, processed_entries, selected_keys=No
     ttk.Radiobutton(filter_frame, text='New', variable=filter_var, value='new').grid(row=0, column=2, padx=4)
     ttk.Radiobutton(filter_frame, text='Updates', variable=filter_var, value='updates').grid(row=0, column=3, padx=4)
     ttk.Radiobutton(filter_frame, text='Processed', variable=filter_var, value='processed').grid(row=0, column=4, padx=4)
+    ttk.Radiobutton(filter_frame, text='Ignored', variable=filter_var, value='ignored').grid(row=0, column=5, padx=4)
     control_frame.columnconfigure(0, weight=1)
 
     filter_var.trace_add('write', on_filter_change)
@@ -1460,6 +1524,7 @@ def main():
     processed_entries = load_processed_csv(processed_csv_path)
     if manual_song_selection:
         rows = settings.get('selected_rows') or []
+        rows = filter_rows_for_processing(rows, 'All')
     else:
         rows = filter_rows_for_processing(rows, selected_source)
 

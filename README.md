@@ -154,6 +154,8 @@ BackBeat lists every `.csv` file in the script folder except `backbeat_processed
 
 Rows with missing or invalid `Youtube` URLs are ignored entirely. They do not count toward the live row total and they are never processed.
 
+Rows that have a valid `Youtube` URL but both `Delay` and `Speed` blank are also ignored. This lets you keep placeholder URLs in the CSV without processing them until timings are filled in.
+
 ## CSV Format
 
 Use this header layout:
@@ -169,8 +171,8 @@ RB2,another_song,https://youtu.be/...,500,98.5,no
 | `Source` | Group or setlist name used for filtering and output folders. |
 | `Filename` | Output file name without extension. Invalid filename characters are stripped automatically. |
 | `Youtube` | Full `http` or `https` URL to the source video. |
-| `Delay` | Milliseconds to adjust the start. Positive values trim from the start. Negative values add black video at the front. Blank is treated as `0`. |
-| `Speed` | Playback speed percentage. `100` means unchanged. Blank is treated as `100`. |
+| `Delay` | Milliseconds to adjust the start. Positive values trim from the start. Negative values add black video at the front. Blank is treated as `0`, except rows where both `Delay` and `Speed` are blank are ignored. |
+| `Speed` | Playback speed percentage. `100` means unchanged. Blank is treated as `100`, except rows where both `Delay` and `Speed` are blank are ignored. |
 | `Remove Black Bar` | Enables crop detection when set to `yes`, `true`, or `1`. |
 
 ## Processing Cache
